@@ -1,4 +1,4 @@
-package Sigebi.domain.user;
+package Sigebi.domain.user.enums;
 
 public enum UserStatus {
     ACTIVE,

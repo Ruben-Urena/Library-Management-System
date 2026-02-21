@@ -1,5 +1,5 @@
-package Sigebi.domain.Penalty;
-import Sigebi.domain.user.User;
+package Sigebi.domain.penalty;
+import Sigebi.domain.user.entities.User;
 import java.time.LocalDate;
 
 public class Penalty {

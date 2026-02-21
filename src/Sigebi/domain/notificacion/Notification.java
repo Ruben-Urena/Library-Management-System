@@ -1,5 +1,5 @@
 package Sigebi.domain.notificacion;
-import Sigebi.domain.user.User;
+import Sigebi.domain.user.entities.User;
 import java.time.LocalDate;
 
 public class Notification {

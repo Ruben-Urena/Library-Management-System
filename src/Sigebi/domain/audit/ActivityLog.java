@@ -1,5 +1,5 @@
 package Sigebi.domain.audit;
-import Sigebi.domain.user.User;
+import Sigebi.domain.user.entities.User;
 import java.time.LocalDate;
 
 public class ActivityLog {
