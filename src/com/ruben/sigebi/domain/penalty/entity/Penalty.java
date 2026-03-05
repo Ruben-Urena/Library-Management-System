@@ -22,16 +22,27 @@ public class Penalty extends AggregateRoot {
     private PenaltyState state;
 
 
-    public Penalty( UserId userId,  int daysOfLoan) {
+    public Penalty(PenaltyId penaltyId, UserId userId,  int daysOfLoan) {
         if(daysOfLoan<1){
             throw  new InvalidPenaltyException("cannot put negative or zero days of penalty");
         }
-        this.penaltyId = new PenaltyId(UUID.randomUUID());
+        Objects.requireNonNull(penaltyId);
+        this.penaltyId = penaltyId;
         this.userId = Objects.requireNonNull(userId);
         this.startDate = Instant.now();
         this.endDate = startDate.plus(Duration.ofDays(daysOfLoan));
         this.state = PenaltyState.ACTIVE;
         addDomainEvent(new PenaltyApplied(getPenaltyId(),getUser(),this.startDate));
+    }
+
+    public Penalty(PenaltyId penaltyId, String description, UserId userId,
+                   Instant startDate, Instant endDate, PenaltyState state) {
+        this.penaltyId = Objects.requireNonNull(penaltyId);
+        this.description = Objects.requireNonNull(description);
+        this.userId = Objects.requireNonNull(userId);
+        this.startDate = Objects.requireNonNull(startDate);
+        this.endDate = Objects.requireNonNull(endDate);
+        this.state = Objects.requireNonNull(state);
     }
 
     public void setDescription(String description) {
@@ -88,5 +99,11 @@ public class Penalty extends AggregateRoot {
         return endDate;
     }
 
+    public String getDescription() {
+        return description;
+    }
 
+    public UserId getUserId() {
+        return userId;
+    }
 }

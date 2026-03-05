@@ -11,10 +11,11 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
-public abstract class bibliographyResource extends AggregateRoot {
+public abstract class BibliographyResource extends AggregateRoot {
 
 
     private final ResourceID resourceID;
+
     private final Language language;
     private CreditsData creditsData;
     private final ResourceMainData mainData;
@@ -22,8 +23,9 @@ public abstract class bibliographyResource extends AggregateRoot {
     private final String resourceType;
     private final LoanableResourceId loanableResourceId;
 
-    public bibliographyResource(ResourceMainData mainData, Language language, String resourceType) {
+    public BibliographyResource(ResourceMainData mainData, Language language, String resourceType) {
         this.resourceID = new ResourceID(UUID.randomUUID());
+
         this.language = Objects.requireNonNull(language);
         this.mainData = Objects.requireNonNull(mainData);
         loanableResourceId = new LoanableResourceId(resourceID);
@@ -34,6 +36,24 @@ public abstract class bibliographyResource extends AggregateRoot {
         this.resourceType = resourceType;
         this.creditsData = null;
         this.publicationData = null;
+    }
+    // En BibliographyRepository o NormalPhysicalBibliographyResource
+    public BibliographyResource(
+            ResourceID resourceID,
+            Language language,
+            ResourceMainData mainData,
+            String resourceType,
+            CreditsData creditsData,
+            PublicationData publicationData
+    ) {
+
+        this.resourceID = resourceID;
+        this.language = language;
+        this.mainData = mainData;
+        this.resourceType = resourceType;
+        this.creditsData = creditsData;
+        this.publicationData = publicationData;
+        this.loanableResourceId = new LoanableResourceId(resourceID);
     }
 
     public LoanableResourceId getLoanableResourceId(){

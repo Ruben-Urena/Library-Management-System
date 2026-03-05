@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface bibliographyResource {
+public interface BibliographyRepository {
     void save(NormalPhysicalBibliographyResource resource);
     Optional<NormalPhysicalBibliographyResource> findById(ResourceID id);
 

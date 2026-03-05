@@ -10,10 +10,10 @@ import java.util.UUID;
 public class Author {
     private FullName fullName;
     private final AuthorId authorId;
-    public Author(FullName fullName) {
+    public Author(AuthorId authorId,FullName fullName) {
         notFullNameNull(fullName);
         this.fullName = fullName;
-        this.authorId = new AuthorId(UUID.randomUUID());
+        this.authorId = Objects.requireNonNull(authorId);
     }
     private void notFullNameNull(FullName fullName){
         if (fullName == null){
@@ -33,7 +33,7 @@ public class Author {
 
     public boolean isAuthorOf(ResourceMainData resourceMainData){
         Objects.requireNonNull(resourceMainData, "Resource cannot be null.");
-        return resourceMainData.author().authorId.value().equals(this.authorId.value());
+        return resourceMainData.authorId().value().equals(this.authorId.value());
     }
 
 }

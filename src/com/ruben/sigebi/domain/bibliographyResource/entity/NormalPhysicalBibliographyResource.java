@@ -14,7 +14,7 @@ import com.ruben.sigebi.domain.bibliographyResource.interfaces.Loanable;
 import java.time.Instant;
 import java.util.Objects;
 
-public class NormalPhysicalBibliographyResource extends bibliographyResource implements Loanable, Reservable, Accessible, Reparable {
+public class NormalPhysicalBibliographyResource extends BibliographyResource implements Loanable, Reservable, Accessible, Reparable {
 
 
     private ResourceStatus status;
@@ -27,6 +27,9 @@ public class NormalPhysicalBibliographyResource extends bibliographyResource imp
         addDomainEvent(new ResourceCreated(getBaseResourceID(),userId, Instant.now()));
     }
 
+    public NormalPhysicalBibliographyResource( ResourceID resourceID, Language language, ResourceMainData mainData, String resourceType, CreditsData creditsData, PublicationData publicationData) {
+        super( resourceID, language, mainData, resourceType, creditsData, publicationData);
+    }
 
 
     @Override
