@@ -16,22 +16,22 @@ import java.util.Optional;
 public class PostgresAuthorRepository implements AuthorRepository {
     @Override
     public void save(Author author) {
-        // SQL limpio sin comillas
+        // Clean SQL without quotes
         String sql = "INSERT INTO authors (id, name, last_name, biography) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setObject(1, author.getAuthorId().value());     // id
-            stmt.setString(2, author.getFullName().name());      // name
-            stmt.setString(3, author.getFullName().lastName());  // last_name
-            stmt.setString(4, "Biografía de ejemplo");           // biography
+            stmt.setObject(1, author.getAuthorId().value());
+            stmt.setString(2, author.getFullName().name());
+            stmt.setString(3, author.getFullName().lastName());
+            stmt.setString(4, "none");
 
             stmt.executeUpdate();
-            System.out.println("✅ Autor guardado correctamente.");
+            System.out.println("Author saved successfully.");
         } catch (SQLException e) {
-            System.err.println("Error específico de SQL: " + e.getSQLState());
-            throw new DatabaseException("Fallo en la persistencia de autores: " + e.getMessage(), e);
+            System.err.println("Specific SQL error: " + e.getSQLState());
+            throw new DatabaseException("Failure in author persistence: " + e.getMessage(), e);
         }
     }
 
