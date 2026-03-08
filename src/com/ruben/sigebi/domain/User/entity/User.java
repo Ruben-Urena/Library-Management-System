@@ -14,8 +14,8 @@ public class User{
     private final FullName fullName;
     private EmailAddress email;
     private Password password;
-    private Set<Role> roles;
-    private UserId userId;
+    private final Set<Role> roles;
+    private final UserId userId;
     private UserStatus userStatus;
 
     public User(UserId userId, FullName fullName, EmailAddress email, Password password, HashSet<Role> role, UserStatus userStatus) {
@@ -78,6 +78,7 @@ public class User{
         return this.userStatus.equals(UserStatus.ACTIVE);
     }
 
+    //getters
     public EmailAddress getEmail() {
         return email;
     }

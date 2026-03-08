@@ -1,5 +1,6 @@
 package com.ruben.sigebi.domain.User.entity;
 import com.ruben.sigebi.domain.User.exeption.InvalidRoleException;
+import com.ruben.sigebi.domain.User.valueObject.Permission;
 import com.ruben.sigebi.domain.User.valueObject.RoleID;
 import com.ruben.sigebi.domain.User.valueObject.SpecialName;
 import java.util.*;
@@ -7,7 +8,7 @@ import java.util.*;
 public class Role {
 
     private final RoleID roleID;
-    private Set<Permission> permissions;
+    private final Set<Permission> permissions;
     private SpecialName roleName;
     private String roleDescription;
 
@@ -18,19 +19,8 @@ public class Role {
         this.roleID = new RoleID(UUID.randomUUID());
     }
 
-    public RoleID getRoleID() {
-        return roleID;
-    }
-    public Set<Permission> getPermissions() {
-        return Collections.unmodifiableSet(permissions);
-    }
-
-    public SpecialName getRoleName() {
-        return roleName;
-    }
-
-    public String getRoleDescription() {
-        return roleDescription;
+    public boolean hasPermission(Permission permission){
+        return permissions.contains(permission);
     }
 
     public void changeRoleName(SpecialName roleName) {
@@ -48,7 +38,8 @@ public class Role {
     }
 
     public boolean addPermission(Permission permission) {
-        return this.permissions.add(Objects.requireNonNull(permission," permission cannot be null"));
+        Objects.requireNonNull(permission, "permission cannot be null");
+        return this.permissions.add(permission);
     }
 
     public boolean addPermissions(Set<Permission> permissions){
@@ -60,6 +51,21 @@ public class Role {
         }
         return wasAdded;
     }
+
+    //getters
+    public SpecialName getRoleName() {
+        return roleName;
+    }
+    public RoleID getRoleID() {
+        return roleID;
+    }
+    public Set<Permission> getPermissions() {
+        return Collections.unmodifiableSet(permissions);
+    }
+    public String getRoleDescription() {
+        return roleDescription;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -73,5 +79,7 @@ public class Role {
     public int hashCode() {
         return getRoleID().hashCode();
     }
+
+
 
 }
