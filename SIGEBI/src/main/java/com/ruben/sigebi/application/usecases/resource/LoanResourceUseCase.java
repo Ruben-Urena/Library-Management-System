@@ -28,7 +28,7 @@ public class LoanResourceUseCase implements UseCase<LoanResourceResponse, LoanRe
     @Override
     public LoanResourceResponse execute(LoanResourceCommand commandRequest) {
 
-        Optional<PhysicalResource> physicalResource = bibliographyRepository.findById(commandRequest.resourceID());
+        Optional<BibliographyRepository> physicalResource = bibliographyRepository.findById(commandRequest.resourceID());
         if (physicalResource.isEmpty()) {
             throw  new RuntimeException();
         }

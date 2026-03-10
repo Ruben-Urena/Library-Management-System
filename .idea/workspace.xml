@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="11b2e9fe-69bb-4251-987f-9afe66b4112a" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Record" />
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Exception" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/pom.xml" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+    <option name="showPreview" value="true" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="39dU2fpYQ5SNiwojYYP4XclD6uo" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.FullName.executor": "Run",
+    "Application.LanguageValidator.executor": "Run",
+    "Application.Main.executor": "Run",
+    "Application.NormalPhysicalResource.executor": "Run",
+    "Application.Notification.executor": "Run",
+    "Application.Role.executor": "Run",
+    "Application.RoleID.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/ruben-dev/Documents/Dev/Java/My_Projects/SIGEBI-SPRING-BOOT/SIGEBI",
+    "onboarding.tips.debug.path": "/home/ruben-dev/Documents/Dev/Java/My_Projects/SIGEBI/src/Main.java",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/com/ruben/sigebi/domain/User" />
+      <recent name="$PROJECT_DIR$/src/com/ruben/sigebi/domain/penalty" />
+      <recent name="$PROJECT_DIR$/src/com/ruben/sigebi/domain/notification" />
+      <recent name="$PROJECT_DIR$/src/com/ruben/sigebi/domain/loan" />
+      <recent name="$PROJECT_DIR$/src/com/ruben/sigebi/domain/bibliographyResource" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/SIGEBI" />
+      <recent name="$PROJECT_DIR$/SIGEBI/src/main/java/com/ruben_urena/SIGEBI" />
+      <recent name="$PROJECT_DIR$/src/main/resources" />
+      <recent name="$PROJECT_DIR$/src/main" />
+      <recent name="$PROJECT_DIR$/SAD" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Main">
+    <configuration name="FullName" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ruben.sigebi.domain.common.objectValue.FullName" />
+      <module name="SIGEBI" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ruben.sigebi.domain.User.valueObject.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="SIGEBI" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NormalPhysicalBibliographyResource" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ruben.sigebi.domain.bibliographyResource.entity.NormalPhysicalBibliographyResource" />
+      <module name="SIGEBI" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ruben.sigebi.domain.bibliographyResource.entity.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Role" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ruben.sigebi.domain.User.entity.Role" />
+      <module name="SIGEBI" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ruben.sigebi.domain.User.entity.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RoleID" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ruben.sigebi.domain.User.valueObject.RoleID" />
+      <module name="SIGEBI" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ruben.sigebi.domain.User.valueObject.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+        <item itemvalue="Application.RoleID" />
+        <item itemvalue="Application.NormalPhysicalBibliographyResource" />
+        <item itemvalue="Application.Role" />
+        <item itemvalue="Application.FullName" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="11b2e9fe-69bb-4251-987f-9afe66b4112a" name="Changes" comment="" />
+      <created>1771025238131</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1771025238131</updated>
+      <workItem from="1771025240667" duration="8120000" />
+      <workItem from="1771243247129" duration="117000" />
+      <workItem from="1771620383682" duration="17416000" />
+      <workItem from="1771646822267" duration="5531000" />
+      <workItem from="1771847830637" duration="20913000" />
+      <workItem from="1771947206943" duration="3562000" />
+      <workItem from="1771950896127" duration="13867000" />
+      <workItem from="1771979572888" duration="12547000" />
+      <workItem from="1772056648557" duration="23000" />
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
