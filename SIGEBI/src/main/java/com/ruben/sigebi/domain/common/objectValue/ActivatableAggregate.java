@@ -28,4 +28,5 @@ public abstract class ActivatableAggregate extends AggregateRoot {
     public boolean isActive(){
         return status == Status.ACTIVE;
     }
+
 }

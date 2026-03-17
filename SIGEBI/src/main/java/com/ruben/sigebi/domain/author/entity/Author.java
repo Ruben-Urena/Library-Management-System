@@ -1,16 +1,14 @@
 package com.ruben.sigebi.domain.author.entity;
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
-import com.ruben.sigebi.domain.common.exception.InvalidFullNameException;
-import com.ruben.sigebi.domain.common.objectValue.ActivatableAggregate;
+import com.ruben.sigebi.domain.common.exception.InvalidFieldException;
 import com.ruben.sigebi.domain.common.objectValue.FullName;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
-import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceMainData;
+import jakarta.persistence.Entity;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 public class Author {
     private FullName fullName;
@@ -25,9 +23,14 @@ public class Author {
         Objects.requireNonNull(resourceIds);
         this.resourceIds = new HashSet<>(Objects.requireNonNull(resourceIds));
     }
+
+    public Set<ResourceID> getResourceIds() {
+        return Set.copyOf(resourceIds);
+    }
+
     private void notFullNameNull(FullName fullName){
         if (fullName == null){
-            throw new InvalidFullNameException("Full name cannot be null.");
+            throw new InvalidFieldException("Full name cannot be null.");
         }
     }
     public FullName getFullName() {

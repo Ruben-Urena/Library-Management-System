@@ -1,7 +1,10 @@
 package com.ruben.sigebi.domain.penalty.entity;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.PenaltyId;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.domain.common.objectValue.ActivatableAggregate;
+import com.ruben.sigebi.domain.loan.entity.Loan;
+import com.ruben.sigebi.domain.loan.valueObjects.LoanId;
 import com.ruben.sigebi.domain.penalty.events.PenaltyApplied;
 import com.ruben.sigebi.domain.penalty.events.PenaltyForgiven;
 import com.ruben.sigebi.domain.penalty.exception.InvalidPenaltyException;
@@ -19,18 +22,21 @@ public class Penalty extends ActivatableAggregate {
     private final UserId userId;
     private final Instant startDate;
     private Instant endDate;
+    private LoanId loanId;
 
 
-    public Penalty(PenaltyId penaltyId, UserId userId) {
 
+    public Penalty(PenaltyId penaltyId, UserId userId, LoanId loanId, Instant endDate) {
         activate();
         Objects.requireNonNull(penaltyId);
+        this.loanId = Objects.requireNonNull(loanId);
         this.penaltyId = Objects.requireNonNull(penaltyId);
         this.userId = Objects.requireNonNull(userId);
         this.startDate = Instant.now();
-        this.endDate = startDate.plus(Duration.ofDays(7));
+        this.endDate = Objects.requireNonNull(endDate);
         addDomainEvent(new PenaltyApplied(getPenaltyId(),getUser(),this.startDate));
     }
+
 
     public Penalty(PenaltyId penaltyId, String description, UserId userId,
                    Instant startDate, Instant endDate) {
@@ -39,6 +45,10 @@ public class Penalty extends ActivatableAggregate {
         this.userId = Objects.requireNonNull(userId);
         this.startDate = Objects.requireNonNull(startDate);
         this.endDate = Objects.requireNonNull(endDate);
+    }
+
+    public LoanId getLoanId() {
+        return loanId;
     }
 
     public void setDescription(String description) {
@@ -89,5 +99,21 @@ public class Penalty extends ActivatableAggregate {
 
     public UserId getUserId() {
         return userId;
+    }
+    public LoanId getResourceID() {
+        return loanId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Penalty penalty = (Penalty) o;
+        return getPenaltyId().equals(penalty.getPenaltyId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getPenaltyId().hashCode();
     }
 }

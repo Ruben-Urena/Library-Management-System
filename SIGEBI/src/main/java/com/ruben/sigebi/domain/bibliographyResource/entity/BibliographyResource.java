@@ -6,6 +6,7 @@ import com.ruben.sigebi.domain.bibliographyResource.valueObject.*;
 import com.ruben.sigebi.domain.common.exception.BusinessRuleViolationException;
 import com.ruben.sigebi.domain.common.exception.InvalidationException;
 import com.ruben.sigebi.domain.common.objectValue.ActivatableAggregate;
+import com.ruben.sigebi.domain.common.objectValue.FullName;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -20,9 +21,9 @@ public abstract class BibliographyResource extends ActivatableAggregate {
     private final ResourceMainData mainData;
     private PublicationData publicationData;
     private final String resourceType;
-    private final LoanableResourceId loanableResourceId;
     private String edition;
     private ContentData contentData;
+
 
     public BibliographyResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorId){
         this.creditsData = new CreditsData(authorId, null,null);
@@ -30,7 +31,6 @@ public abstract class BibliographyResource extends ActivatableAggregate {
 
         this.language = Objects.requireNonNull(language);
         this.mainData = Objects.requireNonNull(mainData);
-        loanableResourceId = new LoanableResourceId(resourceID);
         Objects.requireNonNull(resourceType);
         if (resourceType.isBlank()){
             throw new InvalidationException("resource type cannot be blank");
@@ -40,6 +40,12 @@ public abstract class BibliographyResource extends ActivatableAggregate {
         this.publicationData = null;
         this.contentData = null;
         activate();
+    }
+
+
+
+    public ContentData getContentData() {
+        return contentData;
     }
 
     // En BibliographyRepository o PhysicalResource
@@ -58,8 +64,9 @@ public abstract class BibliographyResource extends ActivatableAggregate {
         this.resourceType = resourceType;
         this.creditsData = creditsData;
         this.publicationData = publicationData;
-        this.loanableResourceId = new LoanableResourceId(resourceID);
+
     }
+    public abstract String universalIdentifier();
 
     public void setContentData(ContentData contentData) {
         Objects.requireNonNull(contentData);
@@ -69,9 +76,7 @@ public abstract class BibliographyResource extends ActivatableAggregate {
         this.contentData = contentData;
     }
 
-    public LoanableResourceId getLoanableResourceId(){
-        return loanableResourceId;
-    }
+
     public void changeEdition(String edition){
         Objects.requireNonNull(edition);
         if (edition.isBlank()){
@@ -88,22 +93,29 @@ public abstract class BibliographyResource extends ActivatableAggregate {
         return resourceType;
     }
 
-    public void setPublicationData(PublicationData publicationData, UserId userId) {
+    public void setPublicationData(PublicationData publicationData) {
         Objects.requireNonNull(publicationData,"Publication data cannot be null");
         if (this.publicationData != null) {
             throw new BusinessRuleViolationException("Publication data is already set");
         }
         this.publicationData = publicationData;
-        addDomainEvent(new ResourceUpdated(getId(), userId, Instant.now()));
+//        addDomainEvent(new ResourceUpdated(getId(), userId, Instant.now()));
     }
 
-    public void setCreditsData(CreditsData creditsData, UserId userId) {
+    public void setCreditsData(Set<FullName> contributors, Set<String> publisher) {
         Objects.requireNonNull(creditsData,"Credits data cannot be null");
-        if (this.creditsData != null){
-            throw new BusinessRuleViolationException("Credits data is already set");
+        if (this.creditsData.publisher() != null){
+            throw new BusinessRuleViolationException("publisher data is already set");
         }
-        this.creditsData = creditsData;
-        addDomainEvent(new ResourceUpdated(getId(), userId, Instant.now()));
+        if (this.creditsData.contributors() != null){
+            throw new BusinessRuleViolationException("contributors data is already set");
+        }
+        this.creditsData = new CreditsData(
+                this.creditsData.authorsIds(),
+                contributors,
+                publisher
+        );
+//        addDomainEvent(new ResourceUpdated(getId(), userId, Instant.now()));
     }
 
     public Language getLanguage() {

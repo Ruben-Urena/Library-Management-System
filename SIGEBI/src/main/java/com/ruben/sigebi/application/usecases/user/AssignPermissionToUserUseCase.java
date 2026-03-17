@@ -1,12 +1,12 @@
 package com.ruben.sigebi.application.usecases.user;
 import com.ruben.sigebi.application.commands.user.AssignPermissionCommand;
-import com.ruben.sigebi.application.dto.response.user.AssignPermissionResponse;
+import com.ruben.sigebi.api.dto.response.user.AssignPermissionResponse;
 import com.ruben.sigebi.application.interfaces.UseCase;
-import com.ruben.sigebi.application.mappers.UserMapper;
+import com.ruben.sigebi.api.mappers.UserMapper;
 import com.ruben.sigebi.domain.service.UserAuthorizationService;
-import com.ruben.sigebi.domain.User.entity.Role;
+import com.ruben.sigebi.domain.roles.entity.Role;
 import com.ruben.sigebi.domain.User.entity.User;
-import com.ruben.sigebi.domain.User.repository.RoleRepository;
+import com.ruben.sigebi.domain.roles.repository.RoleRepository;
 import com.ruben.sigebi.domain.User.repository.UserRepository;
 
 import java.util.Optional;
@@ -26,9 +26,9 @@ public class AssignPermissionToUserUseCase implements UseCase<AssignPermissionRe
     @Override
     public AssignPermissionResponse execute(AssignPermissionCommand command){
 
-        Optional<User> target = userRepository.findById(command.target());
-        Optional<User> actor = userRepository.findById(command.actor());
-        Optional<Role> role = roleRepository.findById(command.roleID());
+        Optional<User> target = userRepository.findById(command.target().value());
+        Optional<User> actor = userRepository.findById(command.actor().value());
+        Optional<Role> role = roleRepository.findById(command.roleID().value());
 
         if (target.isEmpty()){
             throw new RuntimeException("User target is not found");

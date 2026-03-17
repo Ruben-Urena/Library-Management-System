@@ -1,12 +1,12 @@
 package com.ruben.sigebi.application.usecases.user;
 
 import com.ruben.sigebi.application.commands.user.AssignRoleCommand;
-import com.ruben.sigebi.application.dto.response.user.AssignRoleResponse;
+import com.ruben.sigebi.api.dto.response.user.AssignRoleResponse;
 import com.ruben.sigebi.application.interfaces.UseCase;
-import com.ruben.sigebi.application.mappers.UserMapper;
+import com.ruben.sigebi.api.mappers.UserMapper;
 import com.ruben.sigebi.domain.service.UserAuthorizationService;
 import com.ruben.sigebi.domain.User.entity.User;
-import com.ruben.sigebi.domain.User.repository.RoleRepository;
+import com.ruben.sigebi.domain.roles.repository.RoleRepository;
 import com.ruben.sigebi.domain.User.repository.UserRepository;
 import com.ruben.sigebi.domain.common.exception.InvalidationException;
 
@@ -27,8 +27,8 @@ public class AssignRoleToUserUseCase implements UseCase<AssignRoleResponse, Assi
 
     @Override
     public AssignRoleResponse execute(AssignRoleCommand assignRoleCommand){
-        Optional<User> actor = userRepository.findById(assignRoleCommand.actor());
-        Optional<User> target = userRepository.findById(assignRoleCommand.target());
+        Optional<User> actor = userRepository.findById(assignRoleCommand.actor().value());
+        Optional<User> target = userRepository.findById(assignRoleCommand.target().value());
 
         if (actor.isEmpty()) {
             throw new RuntimeException("User actor not found.");

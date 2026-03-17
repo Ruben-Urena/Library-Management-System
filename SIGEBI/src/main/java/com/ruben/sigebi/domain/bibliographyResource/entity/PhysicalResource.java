@@ -4,7 +4,6 @@ import com.ruben.sigebi.domain.bibliographyResource.enums.ResourceState;
 import com.ruben.sigebi.domain.bibliographyResource.events.NormalPhysicalResourceUpdate;
 import com.ruben.sigebi.domain.bibliographyResource.events.ResourceCreated;
 import com.ruben.sigebi.domain.bibliographyResource.interfaces.Accessible;
-import com.ruben.sigebi.domain.bibliographyResource.interfaces.Reservable;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.*;
 import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.domain.common.exception.BusinessRuleViolationException;
@@ -83,13 +82,13 @@ public abstract class PhysicalResource extends BibliographyResource implements  
     }
 
 
-    public void setPhysicalData(PhysicalData physicalData,UserId userId) {
+    public void setPhysicalData(PhysicalData physicalData) {
         Objects.requireNonNull(physicalData);
         if (this.physicalData != null){
             throw  new BusinessRuleViolationException("Physical data is already set");
         }
         this.physicalData = physicalData;
-        addDomainEvent(new NormalPhysicalResourceUpdate(this.getId(),userId, Instant.now()));
+//        addDomainEvent(new NormalPhysicalResourceUpdate(this.getId(),userId, Instant.now()));
     }
 
     public void changeShelfLocation(String newShelfLocation, UserId userId) {

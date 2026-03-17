@@ -3,21 +3,28 @@ package com.ruben.sigebi.infrastructure.persistence.mapper;
 import com.ruben.sigebi.domain.author.entity.Author;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
 import com.ruben.sigebi.domain.common.objectValue.FullName;
+import com.ruben.sigebi.infrastructure.persistence.entity.author.AuthorEntity;
+import com.ruben.sigebi.infrastructure.persistence.entity.user.embed.FullNameEmbeddable;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.UUID;
 
+
 public class AuthorMapper {
-    public static Author toDomain(ResultSet rs) throws SQLException {
-        UUID id = rs.getObject("id", UUID.class);
-        String rawName = rs.getString("name");
-        String bio = rs.getString("biography");
 
-        String[] parts = rawName.split(" ", 2);
-        String firstName = parts[0];
-        String lastName = (parts.length > 1) ? parts[1] : "";
+    private AuthorMapper(){}
 
-        return new Author(new AuthorId(id), new FullName(firstName, lastName));
+    public static AuthorEntity toEntity(Author author){
+        AuthorEntity authorEntity = new AuthorEntity();
+
+        authorEntity.setId(author.getAuthorId().toString());
+        authorEntity.setFullName(new FullNameEmbeddable(author.getFullName().name(), author.getFullName().lastName()));
+
+        return authorEntity;
+    }
+
+    public static Author toDomain(AuthorEntity entity){
+        return new Author( new AuthorId(UUID.fromString(entity.getId())),
+                new FullName(entity.getFullName().getName(),entity.getFullName().getLastname())
+        );
     }
 }

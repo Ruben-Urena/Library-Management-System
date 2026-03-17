@@ -1,5 +1,10 @@
 package com.ruben.sigebi.domain.User.valueObject;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+
+
 public record EmailAddress(
+
         String email) {
         public EmailAddress{
                 if (email == null || email.isBlank()) {

@@ -19,7 +19,6 @@ import java.util.Set;
 public class Book extends PhysicalResource implements Loanable , Reservable{
     private final ISBN ISBN;
 
-
     public Book(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorIdSet, UserId userId, ISBN isbn) {
         super(mainData, language, resourceType, authorIdSet, userId);
         this.ISBN = Objects.requireNonNull(isbn);
@@ -45,10 +44,7 @@ public class Book extends PhysicalResource implements Loanable , Reservable{
         return this.getState().equals(ResourceState.LOANED);
     }
 
-    @Override
-    public boolean canBeLoaned() {
-        return (this.getState().equals(ResourceState.AVAILABLE)) && this.status.equals(Status.ACTIVE);
-    }
+
 
     @Override
     public void markAsReserved(UserId userId){
@@ -60,5 +56,24 @@ public class Book extends PhysicalResource implements Loanable , Reservable{
         }
         this.setState(ResourceState.RESERVED);
         addDomainEvent(new NormalPhysicalResourceUpdate(this.getId(),userId, Instant.now()));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return getISBN().equals(book.getISBN())&& this.getId().equals(book.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        var getISBN = getISBN().hashCode();
+        var getId = getId().hashCode();
+        return getId+getISBN;
+    }
+
+    @Override
+    public String universalIdentifier() {
+        return getISBN().value();
     }
 }

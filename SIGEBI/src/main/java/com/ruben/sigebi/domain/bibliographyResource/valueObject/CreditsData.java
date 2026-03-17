@@ -5,6 +5,6 @@ import com.ruben.sigebi.domain.common.objectValue.FullName;
 import java.util.List;
 import java.util.Set;
 
-public record CreditsData(Set<AuthorId> authorsIds, List<FullName> contributors, List<String> publisher){
+public record CreditsData(Set<AuthorId> authorsIds, Set<FullName> contributors, Set<String> publisher){
 
 }

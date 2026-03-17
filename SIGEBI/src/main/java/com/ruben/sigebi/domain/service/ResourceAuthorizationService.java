@@ -1,11 +1,10 @@
 package com.ruben.sigebi.domain.service;
-import com.ruben.sigebi.domain.User.entity.Role;
+import com.ruben.sigebi.domain.roles.entity.Role;
 import com.ruben.sigebi.domain.User.entity.User;
-import com.ruben.sigebi.domain.User.repository.RoleRepository;
+import com.ruben.sigebi.domain.roles.repository.RoleRepository;
 import com.ruben.sigebi.domain.User.repository.UserRepository;
-import com.ruben.sigebi.domain.User.valueObject.Permission;
+import com.ruben.sigebi.domain.roles.valueObjects.Permission;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
-import com.ruben.sigebi.domain.bibliographyResource.entity.PhysicalResource;
 import com.ruben.sigebi.domain.bibliographyResource.repository.BibliographyRepository;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.domain.common.exception.DomainException;

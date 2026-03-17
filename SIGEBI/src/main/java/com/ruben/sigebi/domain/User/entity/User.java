@@ -2,41 +2,30 @@ package com.ruben.sigebi.domain.User.entity;
 import com.ruben.sigebi.domain.User.enums.UserStates;
 import com.ruben.sigebi.domain.User.valueObject.EmailAddress;
 import com.ruben.sigebi.domain.User.valueObject.Password;
-import com.ruben.sigebi.domain.User.valueObject.RoleID;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.PenaltyId;
+import com.ruben.sigebi.domain.roles.valueObjects.RoleID;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
-import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.domain.common.exception.InvalidationException;
 import com.ruben.sigebi.domain.common.objectValue.ActivatableAggregate;
 import com.ruben.sigebi.domain.common.objectValue.FullName;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-@Entity
-@Table(name = "users")
 public class User extends ActivatableAggregate {
-    @NotBlank
-    @Embedded
+
     private final FullName fullName;
 
-    @NotBlank
-    @Embedded
     private final EmailAddress email;
 
-    @NotBlank
-    @Embedded
     private final Password password;
 
-
     private final Set<RoleID> rolesId;
+
+
     private final UserId userId;
-    @Embedded
+
     private UserStates userStates;
+
 
     public User(UserId userId, FullName fullName, EmailAddress email, Password password, HashSet<RoleID> roleId, UserStates userStates) {
         this.fullName = Objects.requireNonNull(fullName);
@@ -50,15 +39,14 @@ public class User extends ActivatableAggregate {
     }
 
 
+
     public void markAsPenalize(){
-        if (!isActive()){
-            throw new InvalidationException("Cannot penalize if user is not active.");
-        }
         if (this.userStates.equals(UserStates.PENALIZE)){
             throw new InvalidationException("Cannot mark as penalize if user state is: "+ this.getUserState());
         }
         this.userStates = UserStates.PENALIZE;
     }
+
     public void markAsEligible(){
         if (!isActive()){
             throw new InvalidationException("Cannot penalize if user is not active.");
@@ -71,7 +59,7 @@ public class User extends ActivatableAggregate {
 
 
     public Set<RoleID> getRoles() {
-        return rolesId;
+        return Set.copyOf(rolesId);
     }
 
     public boolean assignRoles(Set<RoleID> rolesId) {
@@ -135,4 +123,16 @@ public class User extends ActivatableAggregate {
         return userStates;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+        return getUserId().equals(user.getUserId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getUserId().hashCode();
+    }
 }

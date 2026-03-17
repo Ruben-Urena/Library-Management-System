@@ -1,6 +1,6 @@
 package com.ruben.sigebi.application.commands.user;
 
-import com.ruben.sigebi.domain.User.entity.Role;
+import com.ruben.sigebi.domain.roles.entity.Role;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
 
 import java.util.Set;

@@ -2,9 +2,9 @@ package com.ruben.sigebi.domain.service;
 
 import com.ruben.sigebi.application.exceptions.ForbiddenException;
 import com.ruben.sigebi.domain.User.entity.User;
-import com.ruben.sigebi.domain.User.repository.RoleRepository;
+import com.ruben.sigebi.domain.roles.repository.RoleRepository;
 import com.ruben.sigebi.domain.User.repository.UserRepository;
-import com.ruben.sigebi.domain.User.valueObject.Permission;
+import com.ruben.sigebi.domain.roles.valueObjects.Permission;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.common.exception.DomainException;
 

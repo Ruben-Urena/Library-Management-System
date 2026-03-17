@@ -7,15 +7,11 @@ import com.ruben.sigebi.domain.common.interfaces.DomainRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-public interface AuthorRepository extends DomainRepository<Author, AuthorId> {
-    @Override
-    void save(Author author);
-
-    @Override
+public interface AuthorRepository {
     Optional<Author> findById(AuthorId id);
-
-    Optional<Author> findBySourceId(ResourceID is);
-    List<Author> findAllBySourceId(ResourceID is);
-
+    Optional<Author> resource(ResourceID id);
+    void save(Author author);
+    Set<Author> findAll();
 }

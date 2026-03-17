@@ -1,5 +1,11 @@
 package com.ruben.sigebi.domain.User.valueObject;
-public record Password(String value) {
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+
+
+public record Password(
+        String value) {
     public Password {
 
         if (value == null || value.isBlank()) {

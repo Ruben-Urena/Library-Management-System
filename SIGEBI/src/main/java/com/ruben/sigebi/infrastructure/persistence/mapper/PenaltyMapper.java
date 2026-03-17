@@ -1,22 +1,53 @@
 package com.ruben.sigebi.infrastructure.persistence.mapper;
+
 import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.PenaltyId;
+import com.ruben.sigebi.domain.loan.valueObjects.LoanId;
 import com.ruben.sigebi.domain.penalty.entity.Penalty;
-import com.ruben.sigebi.domain.penalty.enums.PenaltyState;
+import com.ruben.sigebi.infrastructure.persistence.entity.loan.LoanEntity;
+import com.ruben.sigebi.infrastructure.persistence.entity.penalty.PenaltyEntity;
+import com.ruben.sigebi.infrastructure.persistence.entity.user.UserEntity;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.UUID;
 
 public class PenaltyMapper {
-    public static Penalty toDomain(ResultSet rs) throws SQLException {
+
+    private PenaltyMapper(){}
+
+    public static PenaltyEntity toEntity(
+            Penalty penalty,
+            UserEntity user,
+            LoanEntity loan
+    ){
+
+        PenaltyEntity entity = new PenaltyEntity();
+
+        entity.setId(penalty.getPenaltyId().value().toString());
+
+        entity.setUser(user);
+
+        entity.setLoan(loan);
+
+        entity.setStartDate(penalty.getStartDate());
+
+        entity.setEndDate(penalty.getEndDate());
+
+        entity.setDescription(penalty.getDescription());
+
+        return entity;
+    }
+
+
+    public static Penalty toDomain(PenaltyEntity entity){
+        var _userid =  entity.getUser().getId();
+        var _loanId =  entity.getLoan().getId();
+        var _penaltyId =  entity.getId();
+
         return new Penalty(
-                new PenaltyId((UUID) rs.getObject("id")),
-                rs.getString("description"),
-                new UserId((UUID) rs.getObject("user_id")),
-                rs.getTimestamp("start_date").toInstant(),
-                rs.getTimestamp("end_date").toInstant(),
-                PenaltyState.valueOf(rs.getString("state"))
+                new PenaltyId(UUID.fromString(_penaltyId)),
+                new UserId(UUID.fromString(_userid)),
+                new LoanId(UUID.fromString(_loanId)),
+                entity.getEndDate()
         );
     }
 }
