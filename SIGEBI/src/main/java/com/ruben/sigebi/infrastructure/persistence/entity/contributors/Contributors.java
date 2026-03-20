@@ -8,9 +8,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "contributors")
 public class Contributors {
-    @id
+    @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @Embedded
     private FullNameEmbeddable fullNameEmbeddable;
@@ -18,16 +18,16 @@ public class Contributors {
     public Contributors() {
     }
 
-    public Contributors(String id, FullNameEmbeddable fullNameEmbeddable) {
+    public Contributors(UUID id, FullNameEmbeddable fullNameEmbeddable) {
         this.id = id;
         this.fullNameEmbeddable = fullNameEmbeddable;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

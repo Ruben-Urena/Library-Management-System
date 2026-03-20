@@ -6,7 +6,8 @@ public record SpecialName(String special){
         if (special == null || special.isBlank()) {
             throw new InvalidSpecialNameException(" cannot be null or blank");
         }
-        if (special.matches( "^[A-Za-z0-9_-]+$")){
+
+        if (!special.matches("^[A-Za-z0-9_-]+$")){
             throw new InvalidSpecialNameException(" may only contain letters, numbers, '_' and '-'.");
         }
     }

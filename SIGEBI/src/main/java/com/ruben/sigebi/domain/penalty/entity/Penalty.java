@@ -27,7 +27,6 @@ public class Penalty extends ActivatableAggregate {
 
 
     public Penalty(PenaltyId penaltyId, UserId userId, LoanId loanId, Instant endDate) {
-        activate();
         Objects.requireNonNull(penaltyId);
         this.loanId = Objects.requireNonNull(loanId);
         this.penaltyId = Objects.requireNonNull(penaltyId);

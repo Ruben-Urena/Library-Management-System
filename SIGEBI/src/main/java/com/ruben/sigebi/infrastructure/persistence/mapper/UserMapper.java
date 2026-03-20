@@ -24,8 +24,9 @@ public class UserMapper {
     public static UserEntity toEntity(User user, Set<RoleEntity> roles) {
 
         UserEntity entity = new UserEntity();
+        entity.setStatus(user.getStatus());
 
-        entity.setId(user.getUserId().value().toString());
+        entity.setId(user.getUserId().value());
 
         entity.setFullName(
                 new FullNameEmbeddable(
@@ -59,11 +60,11 @@ public class UserMapper {
         Set<RoleID> roles =
                 entity.getRoles()
                         .stream()
-                        .map(r -> new RoleID(UUID.fromString(r.getId())))
+                        .map(r -> new RoleID(UUID.fromString(r.getId().toString())))
                         .collect(Collectors.toSet());
 
-        return new User(
-                new UserId(UUID.fromString(entity.getId())),
+        var a = new User(
+                new UserId(UUID.fromString(entity.getId().toString())),
                 new FullName(
                         entity.getFullName().getName(),
                         entity.getFullName().getLastname()
@@ -73,5 +74,7 @@ public class UserMapper {
                 new HashSet<>(roles),
                 entity.getUserState()
         );
+        a.setStatus(entity.getStatus());
+        return a;
     }
 }

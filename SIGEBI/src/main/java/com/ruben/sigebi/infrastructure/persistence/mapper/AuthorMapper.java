@@ -16,15 +16,18 @@ public class AuthorMapper {
     public static AuthorEntity toEntity(Author author){
         AuthorEntity authorEntity = new AuthorEntity();
 
-        authorEntity.setId(author.getAuthorId().toString());
+        authorEntity.setId(author.getAuthorId().value());
+        authorEntity.setStatus(author.getStatus());
         authorEntity.setFullName(new FullNameEmbeddable(author.getFullName().name(), author.getFullName().lastName()));
 
         return authorEntity;
     }
 
     public static Author toDomain(AuthorEntity entity){
-        return new Author( new AuthorId(UUID.fromString(entity.getId())),
+        var a = new Author( new AuthorId(UUID.fromString(entity.getId().toString())),
                 new FullName(entity.getFullName().getName(),entity.getFullName().getLastname())
         );
+        a.setStatus(entity.getStatus());
+        return a;
     }
 }

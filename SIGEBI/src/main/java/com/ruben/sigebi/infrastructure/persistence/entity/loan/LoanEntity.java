@@ -1,5 +1,6 @@
 package com.ruben.sigebi.infrastructure.persistence.entity.loan;
 
+import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.domain.loan.enums.PendingState;
 import com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource.BibliographyResourceEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.UserEntity;
@@ -13,7 +14,7 @@ import java.util.UUID;
 public class LoanEntity {
 
     @Id
-    private String id;
+    private UUID id;
 
     @Column(name = "start_date")
     private Instant startDate;
@@ -22,18 +23,24 @@ public class LoanEntity {
     private Instant dueDate;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "pending_state")
     private PendingState pendingState;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    @ManyToOne
     @JoinColumn(name = "resource_id")
     private BibliographyResourceEntity resource;
 
     public LoanEntity() {
     }
 
-    public LoanEntity(String id, Instant startDate, Instant dueDate, PendingState pendingState, UserEntity user, BibliographyResourceEntity resource) {
+    public LoanEntity(UUID id, Instant startDate, Instant dueDate, PendingState pendingState, UserEntity user, BibliographyResourceEntity resource) {
         this.id = id;
         this.startDate = startDate;
         this.dueDate = dueDate;
@@ -42,11 +49,19 @@ public class LoanEntity {
         this.resource = resource;
     }
 
-    public String getId() {
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

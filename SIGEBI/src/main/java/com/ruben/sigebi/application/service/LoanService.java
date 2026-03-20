@@ -1,6 +1,7 @@
-package com.ruben.sigebi.domain.service;
+package com.ruben.sigebi.application.service;
 
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
+import com.ruben.sigebi.domain.bibliographyResource.entity.PhysicalResource;
 import com.ruben.sigebi.domain.bibliographyResource.interfaces.Loanable;
 import com.ruben.sigebi.domain.common.exception.BusinessRuleViolationException;
 import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
@@ -17,11 +18,15 @@ import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.bibliographyResource.repository.BibliographyRepository;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.domain.penalty.repository.PenaltyRepository;
+import org.springframework.stereotype.Service;
+
 
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 
+
+@Service
 public class LoanService {
 
     private final static int daysOfLan = 7;
@@ -54,8 +59,8 @@ public class LoanService {
         if (!user.get().isActive()){
             throw new InvalidStateException("User is not active: "+userId);
         }
-        if ( (userHasPermissionToLoan(user.get())) ){
-            throw new BusinessRuleViolationException("User has permission to loan: "+userId);
+        if ( !(userHasPermissionToLoan(user.get())) ){
+            throw new BusinessRuleViolationException("User does not have has permission to loan: "+userId);
         }
         if (userHasPenalty(userId)){
             throw new BusinessRuleViolationException("User has Penalty: " +userId);
@@ -67,7 +72,8 @@ public class LoanService {
         if (L == null){
             throw new BusinessRuleViolationException("Resource is not loanable: "+ resourceID);
         }
-        if (!L.isLoaned()){
+
+        if (L.isLoaned()){
             throw new BusinessRuleViolationException("The resource is either loaned or temporarily deactivated: " +resourceID);
         }
         L.markAsLoaned(userId);
@@ -99,7 +105,7 @@ public class LoanService {
     public boolean userHasPenalty(UserId userId) {
         Objects.requireNonNull(userId);
         var penalty = penaltyRepository.findPenaltyByUserId(userId);
-        if (penalty.isPresent()){
+        if (!penalty.isEmpty()){
             for (var a : penalty.get()){
                 Objects.requireNonNull(a);
                 if (a.isActive()){
@@ -140,12 +146,13 @@ public class LoanService {
     }
 
     //END LOAN;
-    public void endLoan(LoanId loanId, Instant instant){
+    public Loan endLoan(LoanId loanId, Instant instant){
         Optional<Loan> loanOptional = loanRepository.findById(loanId);
         if (loanOptional.isEmpty()){
             throw new ElementNotFoundInTheDatabaseException("Loan not found: "+loanId);
         }
-        loanOptional.get().returnLoan(instant);
+        loanOptional.get().returnLoan(instant); // ← muta el aggregate
+        return loanOptional.get();              // ← retorna el loan mutado
     }
 
 

@@ -22,47 +22,23 @@ import java.util.stream.Collectors;
 
 @Repository
 public class JpaLoanRepository implements LoanRepository {
+
     private final SpringDataUserRepository userRepository;
     private final SpringDataResourceRepository resourceRepository;
     private final SpringDataLoanRepository repository;
 
-    public JpaLoanRepository(SpringDataUserRepository userRepository, SpringDataResourceRepository resourceRepository, SpringDataLoanRepository repository) {
+    public JpaLoanRepository(
+            SpringDataUserRepository userRepository,
+            SpringDataResourceRepository resourceRepository,
+            SpringDataLoanRepository repository
+    ) {
         this.userRepository = userRepository;
         this.resourceRepository = resourceRepository;
         this.repository = repository;
     }
 
     @Override
-    public List<Loan> findLoansByUserStateAndStatus(UserId userId, PendingState pendingState, Status status) {
-        return repository.findLoansByUserStateAndStatus(userId.value().toString(),pendingState.name(),status.name())
-                .stream()
-                .map(LoanMapper::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Loan> findLoansByStateAndStatus(PendingState pendingState, Status status) {
-        return repository.findLoansByStateAndStatus(
-                        pendingState.name(),
-                        status.name()
-                )
-                .stream()
-                .map(LoanMapper::toDomain)
-                .toList();
-    }
-
-    @Override
-    public List<Loan> findAllActiveOverdueLoans() {
-        return repository.findAllActiveOverdueLoans("ACTIVE", "OVERDUE")
-                .stream()
-                .map(LoanMapper::toDomain)
-                .toList();
-    }
-
-
-    @Override
     public void save(Loan loan) {
-
         UserEntity user = userRepository
                 .findById(loan.getUserId().value())
                 .orElseThrow();
@@ -72,7 +48,6 @@ public class JpaLoanRepository implements LoanRepository {
                 .orElseThrow();
 
         LoanEntity entity = LoanMapper.toEntity(loan, user, resource);
-
         repository.save(entity);
     }
 
@@ -83,41 +58,69 @@ public class JpaLoanRepository implements LoanRepository {
     }
 
     @Override
-    public Set<Loan> findByStatus(Status status) {
-        return repository.findByStatus(status.name())
+    public Set<Loan> findByUser(UserId userId) {
+        return repository.findByUser_Id(userId.value()) // ✅ findByUserId no findByUser
                 .stream()
                 .map(LoanMapper::toDomain)
                 .collect(Collectors.toSet());
     }
 
-
     @Override
-    public Set<Loan> findByStatusAndUser(Status status, UserId userId) {
-        return repository.findByStatusAndUser(
-                        status.name(),
-                        userId.value().toString()
+    public List<Loan> findLoansByUserStateAndStatus(UserId userId, PendingState pendingState, Status status) {
+        return repository.findLoansByUserStateAndStatus(
+                        userId.value(),
+                        pendingState,
+                        status
                 )
                 .stream()
                 .map(LoanMapper::toDomain)
-                .collect(Collectors.toSet());
+                .toList();
     }
 
-
-
     @Override
-    public Set<Loan> findByUser(UserId userId) {
-        return repository.findByUserId(userId.value())
+    public List<Loan> findLoansByStateAndStatus(PendingState pendingState, Status status) {
+        return repository.findLoansByPendingStateAndStatus(
+                        pendingState,
+                        status
+                )
                 .stream()
                 .map(LoanMapper::toDomain)
-                .collect(Collectors.toSet());
+                .toList();
+    }
+
+    @Override
+    public List<Loan> findAllActiveOverdueLoans() {
+        return repository.findAllActiveOverdueLoans(
+                        Status.ACTIVE,
+                        PendingState.OVERDUE
+                )
+                .stream()
+                .map(LoanMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public Optional<Loan> findByStatus(Status status) {
+        return repository.findByStatus(status)
+                .map(LoanMapper::toDomain);
     }
 
     @Override
     public Set<Loan> findAllActiveLoans() {
-        return repository.findAllActiveLoans("ACTIVE")
+        return repository.findAllActiveLoans(Status.ACTIVE)
                 .stream()
                 .map(LoanMapper::toDomain)
                 .collect(Collectors.toSet());
+    }
 
+    @Override
+    public Set<Loan> findByStatusAndUserId(Status status, UserId userId) {
+        return repository.findByStatusAndUserId(
+                        status,
+                        userId.value()
+                )
+                .stream()
+                .map(LoanMapper::toDomain)
+                .collect(Collectors.toSet());
     }
 }

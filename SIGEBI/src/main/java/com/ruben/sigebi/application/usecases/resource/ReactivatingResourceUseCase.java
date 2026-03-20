@@ -9,10 +9,11 @@ import com.ruben.sigebi.domain.User.repository.UserRepository;
 import com.ruben.sigebi.domain.bibliographyResource.entity.PhysicalResource;
 import com.ruben.sigebi.domain.bibliographyResource.repository.BibliographyRepository;
 import com.ruben.sigebi.domain.common.exception.DomainException;
-import com.ruben.sigebi.domain.service.ResourceAuthorizationService;
+import com.ruben.sigebi.application.service.ResourceAuthorizationService;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Service
 public class ReactivatingResourceUseCase implements UseCase<StateChangeResourceResponse, StateChangeResourceCommand> {
     private final BibliographyRepository bibliographyRepository;
     private final ResourceAuthorizationService resourceAuthorizationService;

@@ -6,7 +6,6 @@ import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.infrastructure.persistence.entity.author.AuthorEntity;
 import com.ruben.sigebi.infrastructure.persistence.mapper.AuthorMapper;
-import com.ruben.sigebi.infrastructure.persistence.mapper.BookMapper;
 import com.ruben.sigebi.infrastructure.persistence.repository.authorRepo.SpringDataAuthorRepository;
 import org.springframework.stereotype.Repository;
 
@@ -38,11 +37,6 @@ public class JpaAuthorRepository implements AuthorRepository {
                 .map(AuthorMapper::toDomain);
     }
 
-    @Override
-    public Optional<Author> resource(ResourceID id) {
-        return repository.resource(id.value().toString())
-                .map(AuthorMapper::toDomain);
-    }
 
     @Override
     public Set<Author> findAll() {

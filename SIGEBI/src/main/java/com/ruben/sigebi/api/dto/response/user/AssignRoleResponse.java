@@ -6,6 +6,6 @@ import com.ruben.sigebi.domain.User.valueObject.UserId;
 
 import java.util.Map;
 
-public record AssignRoleResponse(UserId userId, Map<Role,RoleID> roleAndId){
+public record AssignRoleResponse(UserId userId, Map<String,RoleID> roleAndId){
 
 }

@@ -36,11 +36,21 @@ public abstract class BibliographyResource extends ActivatableAggregate {
             throw new InvalidationException("resource type cannot be blank");
         }
         this.resourceType = resourceType;
-        this.creditsData = null;
-        this.publicationData = null;
-        this.contentData = null;
-        activate();
+
     }
+    public BibliographyResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorId, ResourceID resourceID){
+        this.creditsData = new CreditsData(authorId, null,null);
+        this.resourceID = Objects.requireNonNull(resourceID);
+        this.language = Objects.requireNonNull(language);
+        this.mainData = Objects.requireNonNull(mainData);
+        Objects.requireNonNull(resourceType);
+        if (resourceType.isBlank()){
+            throw new InvalidationException("resource type cannot be blank");
+        }
+        this.resourceType = resourceType;
+
+    }
+
 
 
 
@@ -103,7 +113,7 @@ public abstract class BibliographyResource extends ActivatableAggregate {
     }
 
     public void setCreditsData(Set<FullName> contributors, Set<String> publisher) {
-        Objects.requireNonNull(creditsData,"Credits data cannot be null");
+//        Objects.requireNonNull(creditsData,"Credits data cannot be null");
         if (this.creditsData.publisher() != null){
             throw new BusinessRuleViolationException("publisher data is already set");
         }

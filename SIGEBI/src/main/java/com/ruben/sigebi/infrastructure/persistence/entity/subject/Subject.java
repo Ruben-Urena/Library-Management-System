@@ -1,31 +1,32 @@
 package com.ruben.sigebi.infrastructure.persistence.entity.subject;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "subjects")
 public class Subject {
-    @id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(name = "name")
     private String subjectName;
 
     public Subject() {
     }
-    public Subject(String id, String subjectName) {
+    public Subject(UUID id, String subjectName) {
         this.id = id;
         this.subjectName = subjectName;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -10,7 +10,7 @@ import com.ruben.sigebi.domain.loan.enums.PendingState;
 import com.ruben.sigebi.domain.loan.repository.LoanRepository;
 import com.ruben.sigebi.domain.penalty.entity.Penalty;
 import com.ruben.sigebi.domain.penalty.repository.PenaltyRepository;
-import com.ruben.sigebi.domain.service.PenaltyService;
+import com.ruben.sigebi.application.service.PenaltyService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
@@ -34,7 +34,7 @@ public class ApplyPenaltyUseCase implements Scheduler{
     }
 
     @Override
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
+//    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
     public void execute() {
 
         var overdueActiveLoans = loanRepository.findLoansByStateAndStatus(PendingState.OVERDUE, Status.ACTIVE);//pending,Status

@@ -1,4 +1,4 @@
-package com.ruben.sigebi.domain.service;
+package com.ruben.sigebi.application.service;
 
 import com.ruben.sigebi.application.exceptions.ForbiddenException;
 import com.ruben.sigebi.domain.User.entity.User;
@@ -7,9 +7,11 @@ import com.ruben.sigebi.domain.User.repository.UserRepository;
 import com.ruben.sigebi.domain.roles.valueObjects.Permission;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.common.exception.DomainException;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class UserAuthorizationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;

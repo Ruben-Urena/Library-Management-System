@@ -20,12 +20,15 @@ public abstract class PhysicalResource extends BibliographyResource implements  
     private ResourceState state;
     private PhysicalData physicalData;
 
-    public PhysicalResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorIdSet, UserId userId){
+    public PhysicalResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorIdSet){
         super(mainData,language,resourceType,authorIdSet);
-        Objects.requireNonNull(userId);
         this.status = Status.ACTIVE;
         this.state = ResourceState.AVAILABLE;
-        addDomainEvent(new ResourceCreated(getId(),userId, Instant.now()));
+//        addDomainEvent(new ResourceCreated(getId(),userId, Instant.now()));
+    }
+
+    public PhysicalResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorId, ResourceID resourceID) {
+        super(mainData, language, resourceType, authorId, resourceID);
     }
 
     public PhysicalResource(ResourceID resourceID, Language language, ResourceMainData mainData, String resourceType, CreditsData creditsData, PublicationData publicationData) {

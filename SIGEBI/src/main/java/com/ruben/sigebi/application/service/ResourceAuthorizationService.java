@@ -1,4 +1,4 @@
-package com.ruben.sigebi.domain.service;
+package com.ruben.sigebi.application.service;
 import com.ruben.sigebi.domain.roles.entity.Role;
 import com.ruben.sigebi.domain.User.entity.User;
 import com.ruben.sigebi.domain.roles.repository.RoleRepository;
@@ -8,9 +8,11 @@ import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.bibliographyResource.repository.BibliographyRepository;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.domain.common.exception.DomainException;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class ResourceAuthorizationService {
 
     private final UserRepository userRepository;

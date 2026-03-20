@@ -1,5 +1,6 @@
 package com.ruben.sigebi.infrastructure.persistence.entity.penalty;
 
+import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.infrastructure.persistence.entity.loan.LoanEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.UserEntity;
 import jakarta.persistence.*;
@@ -12,9 +13,13 @@ import java.util.UUID;
 public class PenaltyEntity {
 
     @Id
-    private String id;
+    private UUID id;
 
+    @Column(name = "description")
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Column(name = "start_date")
     private Instant startDate;
@@ -22,15 +27,19 @@ public class PenaltyEntity {
     @Column(name = "end_date")
     private Instant endDate;
 
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    @ManyToOne
     @JoinColumn(name = "loan_id")
     private LoanEntity loan;
 
-    public PenaltyEntity() {}
+    public PenaltyEntity() {
 
-    public PenaltyEntity(String id, String description, Instant startDate, Instant endDate, UserEntity user, LoanEntity loan) {
+    }
+
+    public PenaltyEntity(UUID id, String description, Instant startDate, Instant endDate, UserEntity user, LoanEntity loan) {
         this.id = id;
         this.description = description;
         this.startDate = startDate;
@@ -39,11 +48,19 @@ public class PenaltyEntity {
         this.loan = loan;
     }
 
-    public String getId() {
+    public Status getStatus(){
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

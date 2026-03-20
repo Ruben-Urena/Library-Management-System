@@ -6,12 +6,9 @@ import com.ruben.sigebi.domain.roles.repository.RoleRepository;
 import com.ruben.sigebi.domain.roles.valueObjects.Permission;
 import com.ruben.sigebi.domain.roles.valueObjects.RoleID;
 import com.ruben.sigebi.domain.roles.valueObjects.SpecialName;
-import com.ruben.sigebi.infrastructure.persistence.entity.role.RoleEntity;
 import com.ruben.sigebi.infrastructure.persistence.mapper.RoleMapper;
 import com.ruben.sigebi.infrastructure.persistence.repository.roleRepo.SpringDataRoleRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,9 +22,10 @@ public class JpaRoleRepository implements RoleRepository {
         this.repository = repository;
     }
 
+
     @Override
-    public Set<Role> findByUser(UserId userid) {
-        return repository.findByUser(userid.value().toString())
+    public Set<Role> findByUser(UserId userId) {
+        return repository.findRolesByUserId(userId.value())
                 .stream()
                 .map(RoleMapper::toDomain)
                 .collect(Collectors.toSet());
@@ -35,8 +33,7 @@ public class JpaRoleRepository implements RoleRepository {
 
     @Override
     public void save(Role role) {
-        RoleEntity entity = RoleMapper.toEntity(role);
-        repository.save(entity);
+        repository.save(RoleMapper.toEntity(role));
     }
 
     @Override
@@ -47,15 +44,16 @@ public class JpaRoleRepository implements RoleRepository {
 
     @Override
     public Optional<Role> findByName(SpecialName name) {
-        return repository
-                .findByRoleNameSpecial(name.special())
+        return repository.findByRoleNameSpecial(name.special())
                 .map(RoleMapper::toDomain);
     }
 
     @Override
-    public Optional<Role> findByPermission(Permission permission) {
-        return repository
-                .findByPermission(permission.value())
-                .map(RoleMapper::toDomain);
+    public Set<Role> findByPermission(Permission permission) {
+        return repository.findByPermissions(permission.value())
+                .stream()
+                .map(RoleMapper::toDomain)
+                .collect(Collectors.toSet());
     }
+
 }

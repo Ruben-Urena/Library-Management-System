@@ -1,5 +1,6 @@
 package com.ruben.sigebi.infrastructure.persistence.entity.author;
 
+import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource.BibliographyResourceEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.embed.FullNameEmbeddable;
 import jakarta.persistence.*;
@@ -12,19 +13,42 @@ import java.util.UUID;
 public class AuthorEntity {
 
     @Id
-    private String id;
+    private UUID id;
+    @Embedded
+    private FullNameEmbeddable fullName;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @ManyToMany(mappedBy = "authorsIds")
+    private Set<BibliographyResourceEntity> resources;
+
 
     public AuthorEntity() {
     }
 
-    @Embedded
-    private FullNameEmbeddable fullName;
 
-    public String getId() {
+    public Set<BibliographyResourceEntity> getResources() {
+        return resources;
+    }
+
+    public void setResources(Set<BibliographyResourceEntity> resources) {
+        this.resources = resources;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

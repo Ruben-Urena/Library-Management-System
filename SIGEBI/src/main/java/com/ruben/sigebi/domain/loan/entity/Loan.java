@@ -33,19 +33,19 @@ public class Loan extends ActivatableAggregate {
         this.dueDate = Objects.requireNonNull(endDate);
         Objects.requireNonNull(loanId);
         this.loanID = new LoanId(loanId);
-        activate();
         this.pendingState = PendingState.ON_TIME;
-        addDomainEvent(new LoanCreated(getResourceId(),getLoanID(),getUserId(),this.startDate));
+        activate();
+//        addDomainEvent(new LoanCreated(getResourceId(),getLoanID(),getUserId(),this.startDate));
     }
 
     public Loan(LoanId loanID, UserId userId, ResourceID sourceID,
-                Instant startDate, Instant dueDate) {
+                Instant startDate, Instant dueDate, PendingState pendingState) {
         this.loanID = Objects.requireNonNull(loanID);
         this.userId = Objects.requireNonNull(userId);
         this.sourceID = Objects.requireNonNull(sourceID);
         this.startDate = Objects.requireNonNull(startDate);
         this.dueDate = Objects.requireNonNull(dueDate);
-        activate();
+        this.pendingState = Objects.requireNonNull(pendingState);
     }
 
     public PendingState getPendingState() {

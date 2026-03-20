@@ -13,8 +13,8 @@ public abstract class ActivatableAggregate extends AggregateRoot {
         this.status = Status.ACTIVE;
     }
     public void deactivate(){
-        if (canBeDeleted()){
-            throw  new InvalidationException("Status is already inactive.");
+        if (!isActive()){
+            throw new InvalidationException("Status is already inactive.");
         }
         this.status = Status.INACTIVE;
     }
@@ -29,4 +29,7 @@ public abstract class ActivatableAggregate extends AggregateRoot {
         return status == Status.ACTIVE;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }

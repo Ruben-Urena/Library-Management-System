@@ -43,9 +43,9 @@ public class UserMapper {
     }
 
     public static AssignRoleResponse RoleToResponse(User user, Set<Role> role){
-        Map<Role, RoleID> roleAndID = new HashMap<>();
+        Map<String, RoleID> roleAndID = new HashMap<>();
         for (var a : role){
-            roleAndID.put(a, a.getRoleID());
+            roleAndID.put( a.getRoleName().special(), a.getRoleID());
         }
 
         return  new AssignRoleResponse(

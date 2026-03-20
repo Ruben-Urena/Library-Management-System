@@ -11,7 +11,6 @@ import java.util.Set;
 
 public interface AuthorRepository {
     Optional<Author> findById(AuthorId id);
-    Optional<Author> resource(ResourceID id);
     void save(Author author);
     Set<Author> findAll();
 }

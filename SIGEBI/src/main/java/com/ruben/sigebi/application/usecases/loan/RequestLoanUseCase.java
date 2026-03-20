@@ -10,7 +10,7 @@ import com.ruben.sigebi.domain.common.exception.DomainException;
 import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
 import com.ruben.sigebi.domain.loan.entity.Loan;
 import com.ruben.sigebi.domain.loan.repository.LoanRepository;
-import com.ruben.sigebi.domain.service.LoanService;
+import com.ruben.sigebi.application.service.LoanService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -56,8 +56,7 @@ public class RequestLoanUseCase implements UseCase<LoanResourceResponse, LoanRes
                 endDate
         );
         loanRepository.save(loan);
-
-        //using my mapper here (to a DTO response) :)
+        
         return LoanMapper.loanToResponse(loan);
     }
 }

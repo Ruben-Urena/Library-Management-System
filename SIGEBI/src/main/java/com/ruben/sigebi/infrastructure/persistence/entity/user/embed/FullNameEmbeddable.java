@@ -1,13 +1,21 @@
 package com.ruben.sigebi.infrastructure.persistence.entity.user.embed;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class FullNameEmbeddable {
 
+    @Column(name = "first_name")
     private String name;
+    @Column(name = "last_name")
     private String lastname;
 
-    public FullNameEmbeddable(String name, String s) {
+    public FullNameEmbeddable() {
+    }
+
+    public FullNameEmbeddable(String name, String lastname) {
+        this.name = name;
+        this.lastname = lastname;
     }
 
     public String getName() {

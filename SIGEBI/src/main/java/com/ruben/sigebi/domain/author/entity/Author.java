@@ -2,6 +2,7 @@ package com.ruben.sigebi.domain.author.entity;
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.domain.common.exception.InvalidFieldException;
+import com.ruben.sigebi.domain.common.objectValue.ActivatableAggregate;
 import com.ruben.sigebi.domain.common.objectValue.FullName;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
 import jakarta.persistence.Entity;
@@ -10,7 +11,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Author {
+public class Author extends ActivatableAggregate {
     private FullName fullName;
     private final AuthorId authorId;
     private Set<ResourceID> resourceIds;

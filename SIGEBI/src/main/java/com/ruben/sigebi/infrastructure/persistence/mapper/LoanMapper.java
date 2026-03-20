@@ -21,8 +21,9 @@ public class LoanMapper {
     ){
 
         LoanEntity entity = new LoanEntity( );
+        entity.setStatus(loan.getStatus());
 
-        entity.setId(loan.getLoanID().loanID().toString());
+        entity.setId(loan.getLoanID().loanID());
 
         entity.setUser(user);
 
@@ -39,12 +40,15 @@ public class LoanMapper {
 
 
     public static Loan toDomain(LoanEntity entity) {
-        return new Loan(
-                new LoanId(UUID.fromString(entity.getId())),
-                new UserId(UUID.fromString(entity.getId())),
-                new ResourceID(UUID.fromString(entity.getId())),
+        var a =new Loan(
+                new LoanId(UUID.fromString(entity.getId().toString())),
+                new UserId(UUID.fromString(entity.getUser().getId().toString())),
+                new ResourceID(UUID.fromString(entity.getResource().getId().toString())),
                 entity.getStartDate(),
-                entity.getDueDate()
+                entity.getDueDate(),
+                entity.getPendingState()
         );
+        a.setStatus(entity.getStatus());
+        return a;
     }
 }

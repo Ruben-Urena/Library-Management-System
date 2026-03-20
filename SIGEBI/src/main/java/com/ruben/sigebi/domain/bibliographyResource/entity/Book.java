@@ -4,10 +4,7 @@ import com.ruben.sigebi.domain.bibliographyResource.enums.ResourceState;
 import com.ruben.sigebi.domain.bibliographyResource.events.NormalPhysicalResourceUpdate;
 import com.ruben.sigebi.domain.bibliographyResource.interfaces.Loanable;
 import com.ruben.sigebi.domain.bibliographyResource.interfaces.Reservable;
-import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
-import com.ruben.sigebi.domain.bibliographyResource.valueObject.ISBN;
-import com.ruben.sigebi.domain.bibliographyResource.valueObject.Language;
-import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceMainData;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.*;
 import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.domain.common.exception.InvalidStateException;
 import com.ruben.sigebi.domain.common.exception.InvalidStatusException;
@@ -20,8 +17,13 @@ public class Book extends PhysicalResource implements Loanable , Reservable{
     private final ISBN ISBN;
 
     public Book(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorIdSet, UserId userId, ISBN isbn) {
-        super(mainData, language, resourceType, authorIdSet, userId);
+        super(mainData, language, resourceType, authorIdSet);
         this.ISBN = Objects.requireNonNull(isbn);
+    }
+
+    public Book(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorId,  ISBN ISBN, ResourceID resourceID) {
+        super(mainData, language, resourceType, authorId, resourceID);
+        this.ISBN = ISBN;
     }
 
     public ISBN getISBN() {

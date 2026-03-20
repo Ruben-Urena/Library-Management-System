@@ -1,5 +1,6 @@
 package com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource;
 
+import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.infrastructure.persistence.entity.author.AuthorEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource.embed.*;
 import com.ruben.sigebi.infrastructure.persistence.entity.contributors.Contributors;
@@ -10,6 +11,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Entity
@@ -18,10 +20,13 @@ import java.util.Set;
 public abstract class BibliographyResourceEntity {
 
     @Id
-    private String id;
+    private UUID id;
 
     @Column(name = "publication_date")
     private Instant publicationDate;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Embedded
     private LanguageEmbeddable language;
@@ -29,6 +34,7 @@ public abstract class BibliographyResourceEntity {
     @Embedded
     private ResourceMainDataEmbeddable mainData;
 
+    @ManyToMany
     @JoinTable(
             name = "resource_authors",
             joinColumns = @JoinColumn(name = "resource_id"),
@@ -36,7 +42,7 @@ public abstract class BibliographyResourceEntity {
     )
     private Set<AuthorEntity> authorsIds = new HashSet<>();
 
-
+    @ManyToMany
     @JoinTable(
             name = "resource_contributors",
             joinColumns = @JoinColumn(name = "resource_id"),
@@ -45,7 +51,7 @@ public abstract class BibliographyResourceEntity {
     private Set<Contributors> contributors = new HashSet<>();
 
 
-
+    @ManyToMany
     @JoinTable(
             name = "resource_publishers",
             joinColumns = @JoinColumn(name = "resource_id"),
@@ -53,13 +59,28 @@ public abstract class BibliographyResourceEntity {
     )
     private Set<Publisher> publishers = new HashSet<>();
 
-
+    @Column(name = "resource_type")
     private String resourceType;
 
+    @Column(name = "edition")
     private String edition;
 
-
+    @Column(name = "description")
     private String description;
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Set<AuthorEntity> getAuthorsIds() {
+        return authorsIds;
+    }
+
+    @ManyToMany
     @JoinTable(
             name = "resource_subjects",
             joinColumns = @JoinColumn(name = "resource_id"),
@@ -86,11 +107,11 @@ public abstract class BibliographyResourceEntity {
         this.subjectsList = subjectsList;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -10,7 +10,7 @@ import com.ruben.sigebi.domain.roles.repository.RoleRepository;
 import com.ruben.sigebi.domain.User.repository.UserRepository;
 import com.ruben.sigebi.domain.bibliographyResource.factory.ResourceFactory;
 import com.ruben.sigebi.domain.bibliographyResource.repository.BibliographyRepository;
-import com.ruben.sigebi.domain.service.ResourceAuthorizationService;
+import com.ruben.sigebi.application.service.ResourceAuthorizationService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

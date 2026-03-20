@@ -1,4 +1,4 @@
-package com.ruben.sigebi.domain.service;
+package com.ruben.sigebi.application.service;
 
 
 import com.ruben.sigebi.domain.User.entity.User;
@@ -17,6 +17,7 @@ import com.ruben.sigebi.domain.penalty.repository.PenaltyRepository;
 import com.ruben.sigebi.domain.roles.entity.Role;
 import com.ruben.sigebi.domain.roles.repository.RoleRepository;
 import com.ruben.sigebi.domain.roles.valueObjects.Permission;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+@Service
 public class PenaltyService{
     //PENALTY IS CREATED IF:   USER HAS A LOAN -> THIS LOAN END DATE IS BEFORE TODAY;
     //PENALTY IS REMOVED IF:   (ADMIN WANT XD) USER HAS A PENALTY -> THAT PENALTY END DATE IS BEFORE TODAY;
@@ -40,6 +42,7 @@ public class PenaltyService{
         this.penaltyRepository = Objects.requireNonNull(penaltyRepository);
         this.roleRepository = roleRepository;
     }
+
 
     //penalty - resource
     public Instant applyPenalty(Loan loan){
@@ -74,12 +77,20 @@ public class PenaltyService{
         }
 
         Set<Role> roles = roleRepository.findByUser(adminId);
+
         if (roles.isEmpty()){
             throw new ElementNotFoundInTheDatabaseException("User does not have roles: " + adminId);
         }
         for( var role : roles){
-            if (role.getPermissions().contains(new Permission("USER","APPLY_PENALTY"))){
+            boolean hasPermission = role.getPermissions().stream()
+                    .anyMatch(p ->
+                            p.source().equals("USER") &&
+                                    p.action().equals("APPLY_PENALTY")
+                    );
+
+            if (hasPermission){
                 borrower.get().markAsPenalize();
+                return;
             }
         }
         throw new BusinessRuleViolationException("User does not have permission to apply penalty: "+ adminId);
@@ -132,7 +143,13 @@ public class PenaltyService{
         }
 
         for( var role : roles){
-            if (role.getPermissions().contains(new Permission("USER","REMOVE_PENALTY"))){
+            boolean hasPermission = role.getPermissions().stream()
+                    .anyMatch(p ->
+                            p.source().equals("USER") &&
+                                    p.action().equals("REMOVE_PENALTY")
+                    );
+            System.out.println(role.getPermissions());
+            if (hasPermission){
                 //Marking penalty as inactive.
                 penaltyOptional.get().endPenalty();
 
@@ -144,6 +161,7 @@ public class PenaltyService{
 
                 //Marking user as eligible, so he or she can loan again
                 user.get().markAsEligible();
+                return;
             }
         }
         throw new BusinessRuleViolationException("User does not have permission to remove a penalty: "+adminId);
@@ -160,7 +178,7 @@ public class PenaltyService{
         return loan.isOverdue();
     }
     public boolean UserHasALoan(UserId userId){
-        Set<Loan> loan = loanRepository.findByStatusAndUser(Status.ACTIVE,userId);//active loans
+        Set<Loan> loan = loanRepository.findByStatusAndUserId(Status.ACTIVE,userId);//active loans
         return !(loan.isEmpty());
     }
 

@@ -1,6 +1,7 @@
 package com.ruben.sigebi.infrastructure.persistence.entity.user;
 
 import com.ruben.sigebi.domain.User.enums.UserStates;
+import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.infrastructure.persistence.entity.role.RoleEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.embed.EmailEmbeddable;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.embed.FullNameEmbeddable;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Table(name = "users")
 public class UserEntity {
     @Id
-    private String id;
+    private UUID id;
 
     @Embedded
     private FullNameEmbeddable fullName;
@@ -26,24 +27,36 @@ public class UserEntity {
     private PasswordEmbeddable password;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_state")
     private UserStates userState;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     public UserEntity() {
     }
 
+    @ManyToMany
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-
     private Set<RoleEntity> roles = new HashSet<>();
 
-    public String getId() {
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

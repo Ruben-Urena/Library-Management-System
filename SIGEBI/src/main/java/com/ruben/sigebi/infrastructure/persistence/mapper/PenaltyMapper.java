@@ -21,8 +21,9 @@ public class PenaltyMapper {
     ){
 
         PenaltyEntity entity = new PenaltyEntity();
+        entity.setStatus(penalty.getStatus());
 
-        entity.setId(penalty.getPenaltyId().value().toString());
+        entity.setId(penalty.getPenaltyId().value());
 
         entity.setUser(user);
 
@@ -39,15 +40,17 @@ public class PenaltyMapper {
 
 
     public static Penalty toDomain(PenaltyEntity entity){
-        var _userid =  entity.getUser().getId();
-        var _loanId =  entity.getLoan().getId();
-        var _penaltyId =  entity.getId();
+        var _userid =  entity.getUser().getId().toString();
+        var _loanId =  entity.getLoan().getId().toString();
+        var _penaltyId =  entity.getId().toString();
 
-        return new Penalty(
+        var a =  new Penalty(
                 new PenaltyId(UUID.fromString(_penaltyId)),
                 new UserId(UUID.fromString(_userid)),
                 new LoanId(UUID.fromString(_loanId)),
                 entity.getEndDate()
         );
+        a.setStatus(entity.getStatus());
+        return a;
     }
 }

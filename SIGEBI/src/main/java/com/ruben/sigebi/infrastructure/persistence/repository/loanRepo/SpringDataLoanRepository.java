@@ -1,24 +1,49 @@
 package com.ruben.sigebi.infrastructure.persistence.repository.loanRepo;
-import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.common.enums.Status;
-import com.ruben.sigebi.domain.loan.entity.Loan;
 import com.ruben.sigebi.domain.loan.enums.PendingState;
-import com.ruben.sigebi.domain.loan.valueObjects.LoanId;
 import com.ruben.sigebi.infrastructure.persistence.entity.loan.LoanEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
-import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 public interface SpringDataLoanRepository
         extends JpaRepository<LoanEntity, UUID> {
-    Set<LoanEntity> findByUserId(UUID userId);
-    public List<LoanEntity> findLoansByUserStateAndStatus(String userId, String pendingState, String status);
-    public List<LoanEntity> findAllActiveOverdueLoans(String status, String pendingState);
-    public Optional<LoanEntity> findByStatus(String status);
-    public Set<LoanEntity> findAllActiveLoans(String status);
-    public Set<LoanEntity> findByStatusAndUser(String status, String userId);
-    public List<LoanEntity> findLoansByStateAndStatus(String pendingState, String status);
+    Set<LoanEntity> findByUser_Id(UUID userId);
+
+    // ✅ pendingState y status son enums — pasa el enum directo
+    @Query("SELECT l FROM LoanEntity l WHERE l.user.id = :userId AND l.pendingState = :pendingState AND l.status = :status")
+    List<LoanEntity> findLoansByUserStateAndStatus(
+            @Param("userId") UUID userId,
+            @Param("pendingState") PendingState pendingState,
+            @Param("status") Status status
+    );
+
+    // ✅
+    @Query("SELECT l FROM LoanEntity l WHERE l.pendingState = :pendingState AND l.status = :status")
+    List<LoanEntity> findLoansByPendingStateAndStatus(
+            @Param("pendingState") PendingState pendingState,
+            @Param("status") Status status
+    );
+
+    // ✅
+    @Query("SELECT l FROM LoanEntity l WHERE l.status = :status AND l.pendingState = :pendingState")
+    List<LoanEntity> findAllActiveOverdueLoans(
+            @Param("status") Status status,
+            @Param("pendingState") PendingState pendingState
+    );
+
+    // ✅ status es enum — JPA puede resolverlo solo
+    Optional<LoanEntity> findByStatus(Status status);
+
+    // ✅
+    @Query("SELECT l FROM LoanEntity l WHERE l.status = :status")
+    Set<LoanEntity> findAllActiveLoans(@Param("status") Status status);
+
+    // ✅ JPA navega user → id
+    Set<LoanEntity> findByStatusAndUserId(Status status, UUID userId);
 }

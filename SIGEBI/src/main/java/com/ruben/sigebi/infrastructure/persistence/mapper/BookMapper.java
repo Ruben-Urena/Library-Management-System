@@ -26,11 +26,12 @@ public class BookMapper {
     public BookEntity toEntity(Book book, Set<AuthorEntity> authors) {
 
         BookEntity bookEntity = new BookEntity();
+        bookEntity.setStatus(book.getStatus());
         //ISBN
         bookEntity.setIsbn(new ISBNEmbeddable(book.getISBN().value()));
 
         //id
-        bookEntity.setId(book.getId().toString());
+        bookEntity.setId(book.getId().value());
 
         //description
         if (book.getContentData() != null && book.getContentData().description() != null) {
@@ -158,13 +159,14 @@ public class BookMapper {
     public Book toDomain(BookEntity entity) {
         Set<AuthorId> authors = entity.getAuthors()
                 .stream()
-                .map(a -> new AuthorId(UUID.fromString(a.getId())))
+                .map(a -> new AuthorId(UUID.fromString(a.getId().toString())))
                 .collect(Collectors.toSet());
         //main data, language, resource type.
         var a = new ResourceMainData(entity.getMainData().getTitle(), entity.getMainData().getSubtitle());
-        var b = new Language(entity.getLanguage().toString());
-        var book = new Book(a,b,entity.getResourceType(),authors,null,new ISBN(entity.getIsbn().getValue()));
+        var b = new Language(entity.getLanguage().getLanguage().toLowerCase().trim());
+        var book = new Book(a,b,entity.getResourceType(),authors,new ISBN(entity.getIsbn().getValue()),new ResourceID( entity.getId()));
 
+        book.setStatus(entity.getStatus());
         //Content data
         var subjectList = entity.getSubjectsList();
         List<String> subjectListSTR =  new ArrayList<>();

@@ -14,4 +14,19 @@ public record Permission (String source, String action){
     public String value(){
         return source + ":" + action;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Permission that = (Permission) o;
+        return source().equals(that.source()) && action().equals(that.action());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = source().hashCode();
+        result = 31 * result + action().hashCode();
+        return result;
+    }
 }

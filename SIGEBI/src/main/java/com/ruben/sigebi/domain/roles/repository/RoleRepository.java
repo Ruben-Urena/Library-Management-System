@@ -13,9 +13,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface RoleRepository {
-    Set<Role> findByUser(UserId userid);
+
     void save(Role role);
     Optional<Role> findById(RoleID roleID);
-    Optional<Role> findByName(SpecialName name);
-    Optional<Role> findByPermission(Permission permission);
+    Set<Role> findByUser(UserId userId);
+    public Optional<Role> findByName(SpecialName specialName);
+    Set<Role> findByPermission(Permission permission);
 }

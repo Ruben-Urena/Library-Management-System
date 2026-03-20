@@ -18,6 +18,6 @@ public interface UserRepository {
     void save(User user);
     Optional<User> findById(UserId userId);
     Set<User> findAll();
-    boolean existsByEmail(EmailAddress email);
-    Optional<User> findByEmail(EmailAddress email);
+    public Optional<User> findByEmail(EmailAddress email);
+    public boolean existsByEmail(EmailAddress email);
 }

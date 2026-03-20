@@ -1,5 +1,6 @@
 package com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource.embed;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
@@ -15,6 +16,7 @@ public class LanguageEmbeddable {
         this.language = language;
     }
 
+    @JsonValue
     public String getLanguage() {
         return language;
     }

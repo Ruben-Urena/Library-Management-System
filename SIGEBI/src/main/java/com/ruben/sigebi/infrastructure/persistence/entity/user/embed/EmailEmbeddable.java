@@ -3,9 +3,14 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class EmailEmbeddable {
+
     private String email;
 
+    public EmailEmbeddable() {
+    }
+
     public EmailEmbeddable(String email) {
+        this.email = email;
     }
 
     public String getEmail() {

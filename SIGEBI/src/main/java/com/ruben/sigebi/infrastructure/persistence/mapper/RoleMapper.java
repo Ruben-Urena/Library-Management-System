@@ -17,7 +17,8 @@ public class RoleMapper {
 
         RoleEntity entity = new RoleEntity();
 
-        entity.setId(role.getRoleID().value().toString());
+        entity.setStatus(role.getStatus());
+        entity.setId(role.getRoleID().value());
 
         entity.setRoleName(
                 new SpecialNameEmbeddable(
@@ -53,10 +54,12 @@ public class RoleMapper {
                         )
                         .collect(Collectors.toSet());
 
-        return new Role(
+        var a = new Role(
                 new SpecialName(entity.getRoleName().getSpecial()),
                 permissions,
                 entity.getRoleDescription()
         );
+        a.setStatus(entity.getStatus());
+        return a;
     }
 }

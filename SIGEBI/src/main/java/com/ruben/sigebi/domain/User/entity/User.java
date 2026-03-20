@@ -35,7 +35,6 @@ public class User extends ActivatableAggregate {
         this.password = Objects.requireNonNull(password);
         this.rolesId = new HashSet<>(Objects.requireNonNull(roleId));
         this.userStates = Objects.requireNonNull(userStates);
-        activate();
     }
 
 

@@ -11,4 +11,8 @@ public record Language(String input) {
         }
         return input;
     }
+    public String getLanguageName() {
+        Locale locale = Locale.of(input);
+        return locale.getDisplayLanguage();
+    }
 }

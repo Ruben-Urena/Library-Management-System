@@ -3,14 +3,18 @@ import com.ruben.sigebi.application.commands.user.AssignPermissionCommand;
 import com.ruben.sigebi.api.dto.response.user.AssignPermissionResponse;
 import com.ruben.sigebi.application.interfaces.UseCase;
 import com.ruben.sigebi.api.mappers.UserMapper;
-import com.ruben.sigebi.domain.service.UserAuthorizationService;
+import com.ruben.sigebi.domain.User.valueObject.UserId;
+import com.ruben.sigebi.domain.roles.valueObjects.RoleID;
+import com.ruben.sigebi.application.service.UserAuthorizationService;
 import com.ruben.sigebi.domain.roles.entity.Role;
 import com.ruben.sigebi.domain.User.entity.User;
 import com.ruben.sigebi.domain.roles.repository.RoleRepository;
 import com.ruben.sigebi.domain.User.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class AssignPermissionToUserUseCase implements UseCase<AssignPermissionResponse, AssignPermissionCommand> {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -26,9 +30,9 @@ public class AssignPermissionToUserUseCase implements UseCase<AssignPermissionRe
     @Override
     public AssignPermissionResponse execute(AssignPermissionCommand command){
 
-        Optional<User> target = userRepository.findById(command.target().value());
-        Optional<User> actor = userRepository.findById(command.actor().value());
-        Optional<Role> role = roleRepository.findById(command.roleID().value());
+        Optional<User> target = userRepository.findById(new UserId(command.target().value()));
+        Optional<User> actor = userRepository.findById(new UserId(command.actor().value()));
+        Optional<Role> role = roleRepository.findById(new RoleID(command.roleID().value()));
 
         if (target.isEmpty()){
             throw new RuntimeException("User target is not found");

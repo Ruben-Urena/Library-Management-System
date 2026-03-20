@@ -34,28 +34,22 @@ public class JpaBookRepository implements BibliographyRepository {
     }
 
     @Override
-    public List<BibliographyResource> findByAuthorId(AuthorId authorId) {
-        return repository.findByAuthorId(authorId.toString())
-                .stream()
-                .filter(entity -> entity instanceof BookEntity)
-                .map(entity ->bookMapper.toDomain((BookEntity) entity))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public void save(BibliographyResource resource) {
+        if (!(resource instanceof Book book)) {
+            throw new IllegalArgumentException("Only Book resources are supported.");
+        }
+
         Set<AuthorEntity> authors = new HashSet<>(
                 authorRepository.findAllById(
-                        resource.getCreditsData().authorsIds()
+                        book.getCreditsData().authorsIds()
                                 .stream()
                                 .map(id -> UUID.fromString(id.value().toString()))
                                 .toList()
                 )
         );
-        if (resource instanceof Book B){
-            BookEntity entity = bookMapper.toEntity(B, authors);
-            repository.save(entity);
-        }
+
+        BookEntity entity = bookMapper.toEntity(book, authors);
+        repository.save(entity);
     }
 
     @Override
@@ -76,15 +70,28 @@ public class JpaBookRepository implements BibliographyRepository {
     public List<BibliographyResource> findByStatus(Status status) {
         return repository.findByStatus(status.name())
                 .stream()
-                .map(entity -> (BibliographyResource) bookMapper.toDomain((BookEntity) entity))
+                .map(entity -> (BibliographyResource) bookMapper.toDomain(entity))
                 .toList();
     }
 
     @Override
     public List<BibliographyResource> findByState(ResourceState state) {
-        return repository.findByState(state.name())
+
+        return repository.findByState(state)
                 .stream()
-                .map(entity -> (BibliographyResource) bookMapper.toDomain((BookEntity) entity))
+                .map(entity -> (BibliographyResource) bookMapper.toDomain(entity))
                 .toList();
     }
+
+    @Override
+    public List<BibliographyResource> findByAuthorId(AuthorId authorId) {
+        return repository.findByAuthorId(authorId.value())
+                .stream()
+                .map(entity -> (BibliographyResource) bookMapper.toDomain(entity))
+                .collect(Collectors.toList());
+    }
+
+
+
+
 }

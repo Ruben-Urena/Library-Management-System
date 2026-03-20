@@ -6,12 +6,13 @@ import com.ruben.sigebi.domain.common.exception.DomainException;
 import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
 import com.ruben.sigebi.domain.penalty.entity.Penalty;
 import com.ruben.sigebi.domain.penalty.repository.PenaltyRepository;
-import com.ruben.sigebi.domain.service.PenaltyService;
+import com.ruben.sigebi.application.service.PenaltyService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
 
 @Service
 public class RemovePenaltyUseCase implements Scheduler{
@@ -26,7 +27,7 @@ public class RemovePenaltyUseCase implements Scheduler{
     }
 
     @Override
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
+//    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
     public void execute() {
         List<Penalty> penalties = penaltyRepository.findAllActiveAndDueDatePenalty();
 
