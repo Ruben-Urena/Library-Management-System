@@ -6,6 +6,7 @@ import com.ruben.sigebi.domain.bibliographyResource.enums.ResourceState;
 import com.ruben.sigebi.domain.bibliographyResource.repository.BibliographyRepository;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceMainData;
 import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.infrastructure.persistence.entity.author.AuthorEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource.BookEntity;
@@ -91,7 +92,17 @@ public class JpaBookRepository implements BibliographyRepository {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Optional<BibliographyResource> findByTitleAndAuthorId(ResourceMainData resourceMainData, Set<AuthorId> authorIdSet) {
+        BookMapper a = new BookMapper();
+        var listToUUID =  authorIdSet
+                .stream()
+                .map(AuthorId::value)
+                .collect(Collectors.toSet());
 
+        return repository.findByTitleAndAuthorIds(resourceMainData.title(), listToUUID)
+                .map(a::toDomain);
+    }
 
 
 }

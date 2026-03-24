@@ -1,9 +1,9 @@
 package com.ruben.sigebi.api.mappers;
+import com.ruben.sigebi.api.dto.request.resource.AddAuthorRequest;
+import com.ruben.sigebi.api.dto.request.resource.GetOneResourceRequest;
 import com.ruben.sigebi.api.dto.response.resource.GetAllResourceResponse;
-import com.ruben.sigebi.application.commands.resource.AddResourceCommand;
-import com.ruben.sigebi.application.commands.resource.LoanResourceCommand;
-import com.ruben.sigebi.application.commands.resource.StateChangeResourceCommand;
-import com.ruben.sigebi.api.dto.request.resource.CreateResourceRequest;
+import com.ruben.sigebi.application.commands.resource.*;
+import com.ruben.sigebi.api.dto.request.resource.AddResourceRequest;
 import com.ruben.sigebi.api.dto.request.loan.LoanResourceRequest;
 import com.ruben.sigebi.api.dto.request.resource.StateChangeResourceRequest;
 import com.ruben.sigebi.api.dto.response.resource.AddResourceResponse;
@@ -14,24 +14,34 @@ import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
 import com.ruben.sigebi.domain.bibliographyResource.entity.Book;
 import com.ruben.sigebi.domain.bibliographyResource.entity.PhysicalResource;
 import com.ruben.sigebi.domain.bibliographyResource.enums.ResourceState;
-import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.Language;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceMainData;
+import com.ruben.sigebi.domain.common.objectValue.FullName;
 import com.ruben.sigebi.domain.loan.entity.Loan;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ResourceMapper {
-    public static AddResourceCommand resourceToCommand(CreateResourceRequest createResourceRequest, UserId userId) {
-        Objects.requireNonNull(createResourceRequest);
+    public static AddResourceCommand resourceToCommand(AddResourceRequest addResourceRequest) {
+        Objects.requireNonNull(addResourceRequest);
         return  new AddResourceCommand(
-                createResourceRequest.mainData(),
-                createResourceRequest.language(),
-                createResourceRequest.resourceType(),
-                createResourceRequest.authorIdSet(),
-                userId,
-                createResourceRequest.ISBN(),
-                createResourceRequest.quantity()
+                new ResourceMainData(addResourceRequest.title(), addResourceRequest.subtitle()),
+                new Language(addResourceRequest.language()),
+                addResourceRequest.resourceType(),
+                addResourceRequest.authors()
+                        .stream()
+                        .map(ResourceMapper::authorToCommand)
+                        .collect(Collectors.toSet()),
+                addResourceRequest.isbn(),
+                addResourceRequest.quantity()
+        );
+    }
+    public static AddAuthorCommand authorToCommand(AddAuthorRequest addAuthorRequest) {
+       return new AddAuthorCommand(
+                new FullName( addAuthorRequest.firstName(), addAuthorRequest.lastName())
         );
     }
     public static AddResourceResponse resourceToResponseAdd(BibliographyResource bibliographyResource){
@@ -78,7 +88,7 @@ public class ResourceMapper {
         );
     }
 
-    public static LoanResourceCommand resourceToCommand(LoanResourceRequest loanResourceRequest, UserId userId) {
+    public static LoanResourceCommand loanResourceToCommand(LoanResourceRequest loanResourceRequest, UserId userId) {
         Objects.requireNonNull(loanResourceRequest);
         return  new LoanResourceCommand(
                 new ResourceID(loanResourceRequest.resourceID()),
@@ -109,6 +119,18 @@ public class ResourceMapper {
                 bibliographyResource.getId(),
                 resourceState
         );
+    }
+
+    public static GetOneResourceCommand getOneResourceToCommand(GetOneResourceRequest getOneResourceRequest){
+
+        return new GetOneResourceCommand(
+                new ResourceMainData(getOneResourceRequest.title(), null),
+                getOneResourceRequest.author()
+                        .stream()
+                        .map(ResourceMapper::authorToCommand)
+                        .collect(Collectors.toSet())
+        );
+
     }
 
 

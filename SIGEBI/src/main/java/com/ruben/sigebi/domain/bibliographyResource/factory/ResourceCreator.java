@@ -2,8 +2,11 @@ package com.ruben.sigebi.domain.bibliographyResource.factory;
 
 import com.ruben.sigebi.application.commands.resource.AddResourceCommand;
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
+
+import java.util.Set;
 
 public interface ResourceCreator {
-    BibliographyResource create(AddResourceCommand command);
+    BibliographyResource create(AddResourceCommand command, Set<AuthorId> authorIdSet);
     String type();
 }

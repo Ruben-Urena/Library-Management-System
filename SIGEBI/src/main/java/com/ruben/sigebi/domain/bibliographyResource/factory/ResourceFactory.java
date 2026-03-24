@@ -2,11 +2,13 @@ package com.ruben.sigebi.domain.bibliographyResource.factory;
 
 import com.ruben.sigebi.application.commands.resource.AddResourceCommand;
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,18 +25,17 @@ public class ResourceFactory {
                 ));
     }
 
-    public List<BibliographyResource> create(AddResourceCommand command) {
+    public List<BibliographyResource> create(AddResourceCommand command, Set<AuthorId> authorIdSet) {
 
-        ResourceCreator creator = creators.get(command.resourceType());//BOOK;
+        ResourceCreator creator = creators.get(command.resourceType());
 
         var listOfResources = new ArrayList<BibliographyResource>();
 
         if (creator == null) {
             throw new IllegalArgumentException("Invalid resource type");
         }
-        for (int a = 0; a< command.quantity(); a++){
-            listOfResources.add(creator.create(command));
-        }
+
+        listOfResources.add(creator.create(command, authorIdSet));
 
         return listOfResources;
     }

@@ -152,6 +152,7 @@ public class BookMapper {
             bookEntity.setPublishers(publishers);
         }
 
+        System.out.println(bookEntity.getMainData().getTitle()+" HEREEEEEEEEEEEEEE");
 
         return bookEntity;
     }

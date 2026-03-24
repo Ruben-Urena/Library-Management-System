@@ -7,8 +7,9 @@ public record ResourceMainData(String title, String subtitle) {
         if(title == null || title.isBlank()){
             throw new InvalidationException("Title cannot be null or blank.");
         }
-        if(subtitle == null || subtitle.isBlank()){
-            throw new InvalidationException("Title cannot be null or blank.");
+
+        if(subtitle != null && subtitle.isBlank()){
+            throw new InvalidationException("Subtitle cannot be blank.");
         }
     }
 

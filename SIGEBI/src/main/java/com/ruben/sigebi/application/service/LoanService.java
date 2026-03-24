@@ -53,6 +53,12 @@ public class LoanService {
         if (resource.isEmpty()) {
             throw new ElementNotFoundInTheDatabaseException("Resource not found: "+resourceID);
         }
+        if (resource.get() instanceof PhysicalResource P){
+            if (P.getQuantity() == 0){
+
+
+            }
+        }
         if (user.isEmpty()) {
             throw new ElementNotFoundInTheDatabaseException("User not found: "+ userId);
         }
@@ -76,6 +82,7 @@ public class LoanService {
         if (L.isLoaned()){
             throw new BusinessRuleViolationException("The resource is either loaned or temporarily deactivated: " +resourceID);
         }
+
         L.markAsLoaned(userId);
         return Instant.now();
     }

@@ -3,7 +3,7 @@ package com.ruben.sigebi.infrastructure.persistence.repository.authorRepo.adapte
 import com.ruben.sigebi.domain.author.entity.Author;
 import com.ruben.sigebi.domain.author.repository.AuthorRepository;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
-import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
+import com.ruben.sigebi.domain.common.objectValue.FullName;
 import com.ruben.sigebi.infrastructure.persistence.entity.author.AuthorEntity;
 import com.ruben.sigebi.infrastructure.persistence.mapper.AuthorMapper;
 import com.ruben.sigebi.infrastructure.persistence.repository.authorRepo.SpringDataAuthorRepository;
@@ -38,6 +38,7 @@ public class JpaAuthorRepository implements AuthorRepository {
     }
 
 
+
     @Override
     public Set<Author> findAll() {
 
@@ -46,4 +47,10 @@ public class JpaAuthorRepository implements AuthorRepository {
                 .map(AuthorMapper::toDomain)
                 .collect(Collectors.toSet());
     }
+
+    @Override
+    public Optional<Author> findByFullName(FullName fullName) {
+        return  repository.findByFullName_NameAndFullName_Lastname(fullName.name(), fullName.lastName()).map(AuthorMapper::toDomain);
+    }
+
 }

@@ -14,10 +14,10 @@ public record FullName(
     }
         public  FullName{
         if(name == null  || name.isBlank()){
-           throw new InvalidFieldException("name cannot be null or blank");
+           throw new InvalidFieldException("firstName cannot be null or blank");
         }
         if(lastName == null || lastName.isBlank()){
-            throw new InvalidFieldException("Last name cannot be null or blank");
+            throw new InvalidFieldException("Last firstName cannot be null or blank");
         }
         if(name.length() > 50){
             throw new InvalidFieldException("Name cannot exceed 50 characters.");

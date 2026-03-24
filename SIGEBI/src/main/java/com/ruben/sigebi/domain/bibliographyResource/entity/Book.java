@@ -16,8 +16,8 @@ import java.util.Set;
 public class Book extends PhysicalResource implements Loanable , Reservable{
     private final ISBN ISBN;
 
-    public Book(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorIdSet, UserId userId, ISBN isbn) {
-        super(mainData, language, resourceType, authorIdSet);
+    public Book(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorIdSet, ISBN isbn, Integer quantity) {
+        super(mainData, language, resourceType, authorIdSet, quantity);
         this.ISBN = Objects.requireNonNull(isbn);
     }
 
@@ -40,6 +40,7 @@ public class Book extends PhysicalResource implements Loanable , Reservable{
         }
         this.setState(ResourceState.LOANED) ;
     }
+    //20
 
     @Override
     public boolean isLoaned() {

@@ -6,33 +6,47 @@ import com.ruben.sigebi.domain.bibliographyResource.events.ResourceCreated;
 import com.ruben.sigebi.domain.bibliographyResource.interfaces.Accessible;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.*;
 import com.ruben.sigebi.domain.common.enums.Status;
-import com.ruben.sigebi.domain.common.exception.BusinessRuleViolationException;
-import com.ruben.sigebi.domain.common.exception.DomainException;
-import com.ruben.sigebi.domain.common.exception.InvalidStateException;
+import com.ruben.sigebi.domain.common.exception.*;
 import com.ruben.sigebi.domain.bibliographyResource.interfaces.Loanable;
-import com.ruben.sigebi.domain.common.exception.InvalidStatusException;
 
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Set;
 
 public abstract class PhysicalResource extends BibliographyResource implements  Accessible {
+    private Integer quantity;
     private ResourceState state;
     private PhysicalData physicalData;
 
-    public PhysicalResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorIdSet){
+    //user creation
+    public PhysicalResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorIdSet, Integer quantity){
         super(mainData,language,resourceType,authorIdSet);
         this.status = Status.ACTIVE;
         this.state = ResourceState.AVAILABLE;
+        setQuantity(quantity);
+        activate();
 //        addDomainEvent(new ResourceCreated(getId(),userId, Instant.now()));
     }
 
+    //database creation
     public PhysicalResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorId, ResourceID resourceID) {
         super(mainData, language, resourceType, authorId, resourceID);
     }
 
     public PhysicalResource(ResourceID resourceID, Language language, ResourceMainData mainData, String resourceType, CreditsData creditsData, PublicationData publicationData) {
         super( resourceID, language, mainData, resourceType, creditsData, publicationData);
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        Objects.requireNonNull(quantity," Quantity cannot be null");
+        if (quantity < 1){
+            throw new  InvalidationException("Quantity cannot be negative: " + quantity);
+        }
+        this.quantity = quantity;
     }
 
 

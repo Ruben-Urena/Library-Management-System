@@ -27,9 +27,9 @@ public class Role extends ActivatableAggregate {
 
     public void changeRoleName(SpecialName roleName) {
         if (this.roleName.equals(roleName)){
-            throw new InvalidRoleException("new role name is the same as the actual name: "+ this.roleName);
+            throw new InvalidRoleException("new role firstName is the same as the actual firstName: "+ this.roleName);
         }
-        this.roleName = Objects.requireNonNull(roleName," role name cannot be null");
+        this.roleName = Objects.requireNonNull(roleName," role firstName cannot be null");
     }
 
     public void changeRoleDescription(String roleDescription) {

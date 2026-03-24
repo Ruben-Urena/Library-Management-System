@@ -31,7 +31,7 @@ public class Author extends ActivatableAggregate {
 
     private void notFullNameNull(FullName fullName){
         if (fullName == null){
-            throw new InvalidFieldException("Full name cannot be null.");
+            throw new InvalidFieldException("Full firstName cannot be null.");
         }
     }
     public FullName getFullName() {
