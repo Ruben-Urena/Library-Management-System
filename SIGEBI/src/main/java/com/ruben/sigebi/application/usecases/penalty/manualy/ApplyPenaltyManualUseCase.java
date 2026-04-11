@@ -1,14 +1,12 @@
 package com.ruben.sigebi.application.usecases.penalty.manualy;
-
-
 import com.ruben.sigebi.api.dto.request.penalty.ApplyPenaltyRequest;
 import com.ruben.sigebi.api.dto.response.penalty.PenaltyResponse;
 import com.ruben.sigebi.application.service.PenaltyService;
 import com.ruben.sigebi.domain.User.repository.UserRepository;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.PenaltyId;
+import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.domain.common.exception.DomainException;
-import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
 import com.ruben.sigebi.domain.loan.enums.PendingState;
 import com.ruben.sigebi.domain.loan.repository.LoanRepository;
 import com.ruben.sigebi.domain.penalty.entity.Penalty;
@@ -26,12 +24,8 @@ public class ApplyPenaltyManualUseCase {
     private final UserRepository userRepository;
     private final PenaltyRepository penaltyRepository;
 
-    public ApplyPenaltyManualUseCase(
-            PenaltyService penaltyService,
-            LoanRepository loanRepository,
-            UserRepository userRepository,
-            PenaltyRepository penaltyRepository
-    ) {
+    public ApplyPenaltyManualUseCase(PenaltyService penaltyService, LoanRepository loanRepository,
+                                     UserRepository userRepository, PenaltyRepository penaltyRepository) {
         this.penaltyService = penaltyService;
         this.loanRepository = loanRepository;
         this.userRepository = userRepository;
@@ -44,22 +38,18 @@ public class ApplyPenaltyManualUseCase {
             var adminId = new UserId(request.adminId());
 
 
-            penaltyService.applyPenaltyAdmin(borrowerId, adminId);
-
-
             var overdueLoans = loanRepository.findLoansByUserStateAndStatus(
-                    borrowerId,
-                    PendingState.OVERDUE,
-                    com.ruben.sigebi.domain.common.enums.Status.ACTIVE
-            );
+                    borrowerId, PendingState.OVERDUE, Status.ACTIVE);
 
             if (overdueLoans.isEmpty()) {
                 return PenaltyResponse.failure("No overdue loans found for user: " + request.borrowerId());
             }
 
-
             var loan = overdueLoans.getFirst();
-            Instant endDate = penaltyService.applyPenalty(loan);
+
+
+            penaltyService.applyPenaltyAdmin(borrowerId, adminId); // ← muta user
+            Instant endDate = penaltyService.applyPenalty(loan);   // ← solo valida y calcula endDate
 
             penaltyRepository.save(new Penalty(
                     new PenaltyId(UUID.randomUUID()),

@@ -2,6 +2,7 @@ package com.ruben.sigebi.domain.bibliographyResource.factory;
 
 import com.ruben.sigebi.application.commands.resource.AddResourceCommand;
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
+import com.ruben.sigebi.domain.bibliographyResource.entity.ResourceCopy;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 public class ResourceFactory {
 
-    private Map<String, ResourceCreator> creators ;
+    private final Map<String, ResourceCreator> creators;
 
     public ResourceFactory(List<ResourceCreator> creators) {
         this.creators = creators.stream()
@@ -25,19 +26,23 @@ public class ResourceFactory {
                 ));
     }
 
-    public List<BibliographyResource> create(AddResourceCommand command, Set<AuthorId> authorIdSet) {
-
-        ResourceCreator creator = creators.get(command.resourceType());
-
-        var listOfResources = new ArrayList<BibliographyResource>();
-
+    public ResourceCreationResult create(AddResourceCommand command, Set<AuthorId> authorIdSet) {
+        ResourceCreator creator = creators.get(command.resourceType().toUpperCase());
         if (creator == null) {
-            throw new IllegalArgumentException("Invalid resource type");
+            throw new IllegalArgumentException("Invalid resource type: " + command.resourceType());
         }
 
-        listOfResources.add(creator.create(command, authorIdSet));
+        BibliographyResource resource = creator.create(command, authorIdSet);
+        List<ResourceCopy> copies = creator.createCopies(resource, command.quantity());
 
-        return listOfResources;
+        return new ResourceCreationResult(resource, copies);
     }
+
+    // ─── Result ──────────────────────────────────────────────────────────────
+
+    public record ResourceCreationResult(
+            BibliographyResource resource,
+            List<ResourceCopy> copies
+    ) {}
 
 }

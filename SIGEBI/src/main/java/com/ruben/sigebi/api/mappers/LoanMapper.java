@@ -18,19 +18,19 @@ import java.util.UUID;
 
 public class LoanMapper {
 
-    public static LoanResourceCommand loanToCommand(LoanResourceRequest loanResourceRequest, UserId userId) {
-        Objects.requireNonNull(loanResourceRequest);
+    public static LoanResourceCommand loanToCommand(LoanResourceRequest request, UserId userId) {
+        Objects.requireNonNull(request);
         return new LoanResourceCommand(
-                new ResourceID(loanResourceRequest.resourceID()),
+                new ResourceID(request.resourceID()),
                 userId
         );
     }
 
     public static LoanResourceResponse loanToResponse(Loan loan) {
         Objects.requireNonNull(loan);
-        return LoanResourceResponse.susses(
+        return LoanResourceResponse.success(
                 loan.getLoanID().loanID(),
-                loan.getResourceId().value(),
+                loan.getCopyId().value(),   // ✅ getCopyId(), no getResourceId()
                 loan.getUserId().value(),
                 loan.getDueDate().toString()
         );
@@ -40,7 +40,7 @@ public class LoanMapper {
         Objects.requireNonNull(loan);
         return ReturnLoanResponse.success(
                 loan.getLoanID().loanID(),
-                loan.getResourceId().value(),
+                loan.getCopyId().value(),   // ✅ getCopyId(), no getResourceId()
                 loan.getUserId().value(),
                 returnedAt
         );

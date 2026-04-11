@@ -5,6 +5,7 @@ import com.ruben.sigebi.api.dto.response.user.AssignRoleResponse;
 import com.ruben.sigebi.application.interfaces.UseCase;
 import com.ruben.sigebi.api.mappers.UserMapper;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
+import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
 import com.ruben.sigebi.domain.roles.entity.Role;
 import com.ruben.sigebi.application.service.UserAuthorizationService;
 import com.ruben.sigebi.domain.User.entity.User;
@@ -18,36 +19,39 @@ import java.util.*;
 
 @Service
 public class AssignRoleToUserUseCase implements UseCase<AssignRoleResponse, AssignRoleCommand> {
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserAuthorizationService userAuthorizationService;
 
-    public AssignRoleToUserUseCase(UserRepository userRepository, RoleRepository roleRepository, RoleRepository roleRepository1) {
+    public AssignRoleToUserUseCase(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository1;
-        userAuthorizationService = new UserAuthorizationService(userRepository, roleRepository);
+        this.roleRepository = roleRepository;
+        this.userAuthorizationService = new UserAuthorizationService(userRepository, roleRepository);
     }
 
     @Override
-    public AssignRoleResponse execute(AssignRoleCommand assignRoleCommand){
-        Optional<User> actor = userRepository.findById(new UserId(assignRoleCommand.actor().value()));
-        Optional<User> target = userRepository.findById(new UserId(assignRoleCommand.target().value()));
+    public AssignRoleResponse execute(AssignRoleCommand command) {
+        User actor = userRepository.findById(command.actor())
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException("Actor not found: " + command.actor()));
 
-        if (actor.isEmpty()) {
-            throw new RuntimeException("User actor not found.");
+        User target = userRepository.findById(command.target())
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException("Target user not found: " + command.target()));
+
+        userAuthorizationService.checkUserCanAssignRole(actor.getUserId(), target.getUserId());
+
+        Set<Role> assignedRoles = new HashSet<>();
+        for (var roleId : command.role()) {
+            Role role = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new ElementNotFoundInTheDatabaseException("Role not found: " + roleId));
+
+
+            target.assignRole(roleId);
+            assignedRoles.add(role);
         }
 
-        if (target.isEmpty()) {
-            throw new InvalidationException("User target not found.");
-        }
+        userRepository.save(target);
 
-        userAuthorizationService.checkUserCanAssignRole(actor.get().getUserId(), target.get().getUserId());
-        Set<Role> listOfRoles = new HashSet<>();
-        for (var a: assignRoleCommand.role()){
-            var x = roleRepository.findById(a);
-            roleRepository.save(x.get());
-            listOfRoles.add(x.get());
-        }
-        return UserMapper.RoleToResponse(actor.get(), listOfRoles);
+        return UserMapper.RoleToResponse(target, assignedRoles);
     }
 }

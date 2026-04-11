@@ -5,14 +5,14 @@ import java.util.UUID;
 
 public record ReturnLoanResponse(
         UUID loanId,
-        UUID resourceId,
+        UUID copyId,
         UUID userId,
         Instant returnedAt,
         boolean success,
         String message
 ) {
-    public static ReturnLoanResponse success(UUID loanId, UUID resourceId, UUID userId, Instant returnedAt) {
-        return new ReturnLoanResponse(loanId, resourceId, userId, returnedAt, true, "Loan returned successfully.");
+    public static ReturnLoanResponse success(UUID loanId, UUID copyId, UUID userId, Instant returnedAt) {
+        return new ReturnLoanResponse(loanId, copyId, userId, returnedAt, true, "Loan returned successfully.");
     }
 
     public static ReturnLoanResponse failure(UUID loanId, String message) {

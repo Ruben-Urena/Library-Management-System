@@ -1,8 +1,9 @@
 package com.ruben.sigebi.application.service;
 
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
-import com.ruben.sigebi.domain.bibliographyResource.entity.PhysicalResource;
-import com.ruben.sigebi.domain.bibliographyResource.interfaces.Loanable;
+import com.ruben.sigebi.domain.bibliographyResource.entity.ResourceCopy;
+import com.ruben.sigebi.domain.bibliographyResource.repository.ResourceCopyRepository;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceCopyId;
 import com.ruben.sigebi.domain.common.exception.BusinessRuleViolationException;
 import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
 import com.ruben.sigebi.domain.common.exception.InvalidStateException;
@@ -19,148 +20,121 @@ import com.ruben.sigebi.domain.bibliographyResource.repository.BibliographyRepos
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.domain.penalty.repository.PenaltyRepository;
 import org.springframework.stereotype.Service;
-
-
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-import java.util.Optional;
+
 
 
 @Service
 public class LoanService {
 
-    private final static int daysOfLan = 7;
-    //here, I need a service called; calculate Days Of Loan;( I need to apply latter).
-    //also a policy of MAX LOAN PER USER or ROLE; ( I need to apply latter.)
+    private static final int DAYS_OF_LOAN = 7;
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BibliographyRepository bibliographyRepository;
     private final PenaltyRepository penaltyRepository;
     private final LoanRepository loanRepository;
+    private final ResourceCopyRepository resourceCopyRepository;
 
-    public LoanService(UserRepository userRepository, RoleRepository roleRepository, BibliographyRepository bibliographyRepository, PenaltyRepository penaltyRepository, LoanRepository loanRepository) {
+    public LoanService(UserRepository userRepository, RoleRepository roleRepository,
+                       BibliographyRepository bibliographyRepository,
+                       PenaltyRepository penaltyRepository, LoanRepository loanRepository,
+                       ResourceCopyRepository resourceCopyRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bibliographyRepository = bibliographyRepository;
         this.penaltyRepository = penaltyRepository;
         this.loanRepository = loanRepository;
+        this.resourceCopyRepository = resourceCopyRepository;
     }
 
-    //CREATE LOAN;
-    public Instant LoanResource(ResourceID resourceID, UserId userId){
-        Optional<BibliographyResource> resource = bibliographyRepository.findById(Objects.requireNonNull(resourceID));
-        Optional<User> user = userRepository.findById(Objects.requireNonNull(userId));
-        if (resource.isEmpty()) {
-            throw new ElementNotFoundInTheDatabaseException("Resource not found: "+resourceID);
-        }
-        if (resource.get() instanceof PhysicalResource P){
-            if (P.getQuantity() == 0){
+
+    public LoanResult loanResource(ResourceID resourceID, UserId userId) {
+        Objects.requireNonNull(resourceID);
+        Objects.requireNonNull(userId);
 
 
-            }
-        }
-        if (user.isEmpty()) {
-            throw new ElementNotFoundInTheDatabaseException("User not found: "+ userId);
-        }
-        if (!user.get().isActive()){
-            throw new InvalidStateException("User is not active: "+userId);
-        }
-        if ( !(userHasPermissionToLoan(user.get())) ){
-            throw new BusinessRuleViolationException("User does not have has permission to loan: "+userId);
-        }
-        if (userHasPenalty(userId)){
-            throw new BusinessRuleViolationException("User has Penalty: " +userId);
-        }
-        if( !(resource.get().isActive()) ){
-            throw new InvalidStateException("Resource is not active: "+resourceID);
-        }
-        var L = isResourceLoanable(resource.get());
-        if (L == null){
-            throw new BusinessRuleViolationException("Resource is not loanable: "+ resourceID);
+        BibliographyResource resource = bibliographyRepository.findById(resourceID)
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException(
+                        "Resource not found: " + resourceID));
+
+        if (!resource.isActive()) {
+            throw new InvalidStateException("Resource is not active: " + resourceID);
         }
 
-        if (L.isLoaned()){
-            throw new BusinessRuleViolationException("The resource is either loaned or temporarily deactivated: " +resourceID);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException(
+                        "User not found: " + userId));
+
+        if (!user.isActive()) {
+            throw new InvalidStateException("User is not active: " + userId);
+        }
+        if (!userHasPermissionToLoan(user)) {
+            throw new BusinessRuleViolationException(
+                    "User does not have permission to loan: " + userId);
+        }
+        if (userHasPenalty(userId)) {
+            throw new BusinessRuleViolationException("User has a penalty: " + userId);
         }
 
-        L.markAsLoaned(userId);
-        return Instant.now();
+
+        ResourceCopy copy = resourceCopyRepository.findFirstAvailable(resourceID)
+                .orElseThrow(() -> new BusinessRuleViolationException(
+                        "No available copies for resource: " + resourceID));
+
+
+        copy.markAsLoaned();
+        resourceCopyRepository.save(copy);
+
+
+        Instant dueDate = Instant.now().plus(DAYS_OF_LOAN, ChronoUnit.DAYS);
+        return new LoanResult(copy.getId(), dueDate);
     }
-    private Loanable isResourceLoanable(BibliographyResource resource){
-        if (!(resource instanceof Loanable L)){
-            return null;
-        }
-        return L;
-    }
-    public Loanable isResourceLoanable(ResourceID resourceId){
 
-        Objects.requireNonNull(resourceId);
-        Optional<BibliographyResource> resource = bibliographyRepository.findById(resourceId);
-        if (resource.isPresent()){
 
-            if(resource.get() instanceof Loanable L){
-                return L;
-            }
+    public Loan endLoan(LoanId loanId, Instant returnedAt) {
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException(
+                        "Loan not found: " + loanId));
 
-        }
-        return null;
+
+        ResourceCopy copy = resourceCopyRepository.findById(loan.getCopyId())
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException(
+                        "ResourceCopy not found: " + loan.getCopyId()));
+
+        copy.returnLoan();
+        resourceCopyRepository.save(copy);
+
+        loan.returnLoan(returnedAt);
+        return loan;
     }
-    private boolean loanableIsAvailable(Loanable L){
-        Objects.requireNonNull(L);
-        return !L.isLoaned();
-    }
+
+    // ─── Helpers ─────────────────────────────────────────────────────────────
+
     public boolean userHasPenalty(UserId userId) {
         Objects.requireNonNull(userId);
         var penalty = penaltyRepository.findPenaltyByUserId(userId);
-        if (!penalty.isEmpty()){
-            for (var a : penalty.get()){
-                Objects.requireNonNull(a);
-                if (a.isActive()){
-                   return true;
-                }
-            }
-        }
-        return false;
-    }
-    public boolean userHasPermissionToLoan(UserId userid){
-        Objects.requireNonNull(userid);
-        Optional<User> userOptional = userRepository.findById(userid);
-        if (userOptional.isEmpty()){
-            throw new ElementNotFoundInTheDatabaseException("User not found.");
-        }
-        for (var a : userOptional.get().getRoles()){
-            Optional<Role> roles = roleRepository.findById(a);
-            if (roles.isEmpty()){
-                throw new ElementNotFoundInTheDatabaseException("Role not found.");
-            }
-            if ((roles.get().hasPermission(new Permission("RESOURCE","LOAN")))){
-                return true;
-            }
-        }
-        return false;
-    }
-    public boolean userHasPermissionToLoan(User user){
-        for (var a : user.getRoles()){
-            Optional<Role> roles = roleRepository.findById(a);
-            if (roles.isEmpty()){
-                throw new ElementNotFoundInTheDatabaseException("Role not found.");
-            }
-            if ((roles.get().hasPermission(new Permission("RESOURCE","LOAN")))){
-                return true;
+        if (penalty.isPresent()) {
+            for (var p : penalty.get()) {
+                if (p.isActive()) return true;
             }
         }
         return false;
     }
 
-    //END LOAN;
-    public Loan endLoan(LoanId loanId, Instant instant){
-        Optional<Loan> loanOptional = loanRepository.findById(loanId);
-        if (loanOptional.isEmpty()){
-            throw new ElementNotFoundInTheDatabaseException("Loan not found: "+loanId);
+    public boolean userHasPermissionToLoan(User user) {
+        for (var roleId : user.getRoles()) {
+            Role role = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new ElementNotFoundInTheDatabaseException("Role not found."));
+            if (role.hasPermission(new Permission("RESOURCE", "LOAN"))) return true;
         }
-        loanOptional.get().returnLoan(instant); // ← muta el aggregate
-        return loanOptional.get();              // ← retorna el loan mutado
+        return false;
     }
 
+
+    public record LoanResult(ResourceCopyId copyId, Instant dueDate) {}
 
 }

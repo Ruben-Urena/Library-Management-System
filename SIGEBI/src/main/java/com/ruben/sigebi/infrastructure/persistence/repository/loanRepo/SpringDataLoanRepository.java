@@ -15,7 +15,7 @@ public interface SpringDataLoanRepository
         extends JpaRepository<LoanEntity, UUID> {
     Set<LoanEntity> findByUser_Id(UUID userId);
 
-    // ✅ pendingState y status son enums — pasa el enum directo
+
     @Query("SELECT l FROM LoanEntity l WHERE l.user.id = :userId AND l.pendingState = :pendingState AND l.status = :status")
     List<LoanEntity> findLoansByUserStateAndStatus(
             @Param("userId") UUID userId,
@@ -23,27 +23,27 @@ public interface SpringDataLoanRepository
             @Param("status") Status status
     );
 
-    // ✅
+
     @Query("SELECT l FROM LoanEntity l WHERE l.pendingState = :pendingState AND l.status = :status")
     List<LoanEntity> findLoansByPendingStateAndStatus(
             @Param("pendingState") PendingState pendingState,
             @Param("status") Status status
     );
 
-    // ✅
+
     @Query("SELECT l FROM LoanEntity l WHERE l.status = :status AND l.pendingState = :pendingState")
     List<LoanEntity> findAllActiveOverdueLoans(
             @Param("status") Status status,
             @Param("pendingState") PendingState pendingState
     );
 
-    // ✅ status es enum — JPA puede resolverlo solo
+
     Optional<LoanEntity> findByStatus(Status status);
 
     // ✅
     @Query("SELECT l FROM LoanEntity l WHERE l.status = :status")
     Set<LoanEntity> findAllActiveLoans(@Param("status") Status status);
 
-    // ✅ JPA navega user → id
+
     Set<LoanEntity> findByStatusAndUserId(Status status, UUID userId);
 }

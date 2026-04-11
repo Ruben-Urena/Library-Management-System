@@ -17,8 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "resources")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class BibliographyResourceEntity {
-
+public abstract class BibliographyResourceEntity{
     @Id
     private UUID id;
 

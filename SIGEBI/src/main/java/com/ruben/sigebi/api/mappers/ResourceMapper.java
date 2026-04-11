@@ -25,113 +25,102 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ResourceMapper {
-    public static AddResourceCommand resourceToCommand(AddResourceRequest addResourceRequest) {
-        Objects.requireNonNull(addResourceRequest);
-        return  new AddResourceCommand(
-                new ResourceMainData(addResourceRequest.title(), addResourceRequest.subtitle()),
-                new Language(addResourceRequest.language()),
-                addResourceRequest.resourceType(),
-                addResourceRequest.authors()
-                        .stream()
+
+
+
+    public static AddResourceCommand resourceToCommand(AddResourceRequest request) {
+        Objects.requireNonNull(request);
+        return new AddResourceCommand(
+                new ResourceMainData(request.title(), request.subtitle()),
+                new Language(request.language()),
+                request.resourceType(),
+                request.authors().stream()
                         .map(ResourceMapper::authorToCommand)
                         .collect(Collectors.toSet()),
-                addResourceRequest.isbn(),
-                addResourceRequest.quantity()
+                request.isbn(),
+                request.quantity()
         );
     }
-    public static AddAuthorCommand authorToCommand(AddAuthorRequest addAuthorRequest) {
-       return new AddAuthorCommand(
-                new FullName( addAuthorRequest.firstName(), addAuthorRequest.lastName())
-        );
-    }
-    public static AddResourceResponse resourceToResponseAdd(BibliographyResource bibliographyResource){
-        Objects.requireNonNull(bibliographyResource);
-        return  AddResourceResponse.succes(
-                bibliographyResource.getMainData(),
-                bibliographyResource.getResourceType(),
-                bibliographyResource.getId()
-        );
-    }
-    public static GetAllResourceResponse resourceToResponseGetAll(
-            BibliographyResource bibliographyResource,
-            List<String> authorNames   // ← recibe los nombres ya resueltos
-    ) {
-        String physicalResourceState = null;
-        String physicalResourceFormat = null;
-        String physicalResourceShelfLocation= null;
 
-        if (bibliographyResource instanceof PhysicalResource a) {
-            physicalResourceState = a.getState().name();
-            physicalResourceFormat = a.getPhysicalData().physicalFormat();
-            physicalResourceShelfLocation  = a.getPhysicalData().shelfLocation();
-        }
+    public static AddAuthorCommand authorToCommand(AddAuthorRequest request) {
+        return new AddAuthorCommand(
+                new FullName(request.firstName(), request.lastName())
+        );
+    }
+
+    public static GetOneResourceCommand getOneResourceToCommand(GetOneResourceRequest request) {
+        return new GetOneResourceCommand(
+                new ResourceMainData(request.title(), null),
+                request.author().stream()
+                        .map(ResourceMapper::authorToCommand)
+                        .collect(Collectors.toSet())
+        );
+    }
+
+    public static StateChangeResourceCommand stateToCommand(StateChangeResourceRequest request, UserId userId) {
+        return new StateChangeResourceCommand(
+                request.id(),
+                request.resourceState(),
+                userId
+        );
+    }
+
+    // ─── Domain → Response ───────────────────────────────────────────────────
+
+    public static AddResourceResponse resourceToResponseAdd(BibliographyResource resource, int copiesCreated) {
+        Objects.requireNonNull(resource);
+        return AddResourceResponse.success(
+                resource.getMainData(),
+                resource.getResourceType(),
+                resource.getId(),
+                copiesCreated
+        );
+    }
+
+    public static GetAllResourceResponse resourceToResponseGetAll(
+            BibliographyResource resource,
+            List<String> authorNames
+    ) {
+        String state = null;
+        String format = null;
+        String shelfLocation = null;
         String isbn = null;
 
-        if (bibliographyResource instanceof Book b){
+        if (resource instanceof PhysicalResource p && p.getPhysicalData() != null) {
+            format = p.getPhysicalData().physicalFormat();
+            shelfLocation = p.getPhysicalData().shelfLocation();
+        }
+        if (resource instanceof Book b) {
             isbn = b.getISBN().value();
         }
+
+        String publicationDate = resource.getPublicationData() != null
+                ? resource.getPublicationData().date().toString()
+                : null;
+
+        String description = resource.getContentData() != null
+                ? resource.getContentData().description()
+                : null;
+
         return new GetAllResourceResponse(
-                bibliographyResource.getId().value().toString(),
-                bibliographyResource.getLanguage().getLanguageName(),
-                bibliographyResource.getMainData().title(),
-                bibliographyResource.getMainData().subtitle(),
-                bibliographyResource.getContentData().description(),
-                bibliographyResource.getResourceType(),
-                bibliographyResource.getEdition(),
-                bibliographyResource.getPublicationData().date().toString(),
-                bibliographyResource.getStatus().name(),
-                physicalResourceState,
-                physicalResourceFormat,
-                physicalResourceShelfLocation,
+                resource.getId().value().toString(),
+                resource.getLanguage().getLanguageName(),
+                resource.getMainData().title(),
+                resource.getMainData().subtitle(),
+                description,
+                resource.getResourceType(),
+                resource.getEdition(),
+                publicationDate,
+                resource.getStatus().name(),
+                state,
+                format,
+                shelfLocation,
                 isbn,
                 authorNames
         );
     }
 
-    public static LoanResourceCommand loanResourceToCommand(LoanResourceRequest loanResourceRequest, UserId userId) {
-        Objects.requireNonNull(loanResourceRequest);
-        return  new LoanResourceCommand(
-                new ResourceID(loanResourceRequest.resourceID()),
-                userId
-        );
+    public static StateChangeResourceResponse stateToResponse(BibliographyResource resource, ResourceState state) {
+        return new StateChangeResourceResponse(resource.getId(), state);
     }
-    public static LoanResourceResponse resourceToResponse(Loan loan) {
-        Objects.requireNonNull(loan);
-        return  LoanResourceResponse.susses(
-                loan.getLoanID().loanID(),
-                loan.getResourceId().value(),
-                loan.getUserId().value(),
-                loan.getDueDate().toString()
-        );
-        //UUID loanId, UUID resourceID, UUID userId, String returnDate
-    }
-    public static StateChangeResourceCommand stateToCommand(StateChangeResourceRequest stateChangeResourceRequest, UserId userId) {
-
-        return new StateChangeResourceCommand(
-                stateChangeResourceRequest.id(),
-                stateChangeResourceRequest.resourceState(),
-                userId
-        );
-    }
-
-    public static StateChangeResourceResponse stateToResponse(BibliographyResource bibliographyResource, ResourceState resourceState){
-        return new StateChangeResourceResponse(
-                bibliographyResource.getId(),
-                resourceState
-        );
-    }
-
-    public static GetOneResourceCommand getOneResourceToCommand(GetOneResourceRequest getOneResourceRequest){
-
-        return new GetOneResourceCommand(
-                new ResourceMainData(getOneResourceRequest.title(), null),
-                getOneResourceRequest.author()
-                        .stream()
-                        .map(ResourceMapper::authorToCommand)
-                        .collect(Collectors.toSet())
-        );
-
-    }
-
-
 }

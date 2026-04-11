@@ -24,26 +24,21 @@ public class BookMapper {
     }
 
     public BookEntity toEntity(Book book, Set<AuthorEntity> authors) {
-
         BookEntity bookEntity = new BookEntity();
+        //status
         bookEntity.setStatus(book.getStatus());
         //ISBN
         bookEntity.setIsbn(new ISBNEmbeddable(book.getISBN().value()));
-
         //id
         bookEntity.setId(book.getId().value());
-
         //description
         if (book.getContentData() != null && book.getContentData().description() != null) {
             bookEntity.setDescription(book.getContentData().description());
         }
-
         //edition
         if (book.getEdition() != null) {
             bookEntity.setEdition(book.getEdition());
         }
-
-
         //title and subtitle
         if (book.getMainData().subtitle() != null) {
             bookEntity.setMainData(new ResourceMainDataEmbeddable(
@@ -56,7 +51,6 @@ public class BookMapper {
                     null
             ));
         }
-
         //Language
         bookEntity.setLanguage(new LanguageEmbeddable(book.getLanguage().toString()));
 
@@ -64,8 +58,6 @@ public class BookMapper {
         if (book.getPublicationData() != null) {
             bookEntity.setPublicationDate(book.getPublicationData().date());
         }
-
-
         //Physical data
         String _physicalFormat = null;
         String _shelfLocation = null;
@@ -97,15 +89,8 @@ public class BookMapper {
                 _shelfLocation
         ));
 
-
-        //State
-        bookEntity.setState(book.getState());
-
-        //FALTA ANADIR STATUS A LA BASE DE DATOS.
-
         //resource type
         bookEntity.setResourceType(book.getResourceType());
-
 
         //subjects
         var subjectStr  = book.getContentData().subjectsList();
@@ -152,8 +137,6 @@ public class BookMapper {
             bookEntity.setPublishers(publishers);
         }
 
-        System.out.println(bookEntity.getMainData().getTitle()+" HEREEEEEEEEEEEEEE");
-
         return bookEntity;
     }
 
@@ -162,12 +145,15 @@ public class BookMapper {
                 .stream()
                 .map(a -> new AuthorId(UUID.fromString(a.getId().toString())))
                 .collect(Collectors.toSet());
-        //main data, language, resource type.
-        var a = new ResourceMainData(entity.getMainData().getTitle(), entity.getMainData().getSubtitle());
-        var b = new Language(entity.getLanguage().getLanguage().toLowerCase().trim());
-        var book = new Book(a,b,entity.getResourceType(),authors,new ISBN(entity.getIsbn().getValue()),new ResourceID( entity.getId()));
+
+        var mainData = new ResourceMainData(entity.getMainData().getTitle(), entity.getMainData().getSubtitle());
+        var language = new Language(entity.getLanguage().getLanguage().toLowerCase().trim());
+        var id = new ResourceID(entity.getId());
+
+        var book = new Book(id,language,null,mainData,null,entity.getResourceType(),entity.getEdition(),null,null,new ISBN(entity.getIsbn().getValue()));
 
         book.setStatus(entity.getStatus());
+
         //Content data
         var subjectList = entity.getSubjectsList();
         List<String> subjectListSTR =  new ArrayList<>();
@@ -226,9 +212,6 @@ public class BookMapper {
                 _physicalFormat,
                 entity.getPhysicalData().getShelfLocation()
         ));
-
-        //State
-        book.setState(entity.getState());
 
 
         return  book;

@@ -4,6 +4,9 @@ import com.ruben.sigebi.api.dto.response.resource.StateChangeResourceResponse;
 import com.ruben.sigebi.application.interfaces.UseCase;
 import com.ruben.sigebi.api.mappers.ResourceMapper;
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
+import com.ruben.sigebi.domain.bibliographyResource.enums.ResourceState;
+import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
+import com.ruben.sigebi.domain.common.exception.InvalidStateException;
 import com.ruben.sigebi.domain.roles.repository.RoleRepository;
 import com.ruben.sigebi.domain.User.repository.UserRepository;
 import com.ruben.sigebi.domain.bibliographyResource.entity.PhysicalResource;
@@ -15,30 +18,34 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 @Service
 public class ReactivatingResourceUseCase implements UseCase<StateChangeResourceResponse, StateChangeResourceCommand> {
+
     private final BibliographyRepository bibliographyRepository;
     private final ResourceAuthorizationService resourceAuthorizationService;
 
-    public ReactivatingResourceUseCase(BibliographyRepository bibliographyRepository, UserRepository userRepository, RoleRepository roleRepository) {
+    public ReactivatingResourceUseCase(BibliographyRepository bibliographyRepository,
+                                       UserRepository userRepository,
+                                       RoleRepository roleRepository) {
         this.bibliographyRepository = bibliographyRepository;
-        resourceAuthorizationService = new ResourceAuthorizationService(userRepository,roleRepository,bibliographyRepository);
+        this.resourceAuthorizationService = new ResourceAuthorizationService(
+                userRepository, roleRepository, bibliographyRepository);
     }
 
     @Override
-    public StateChangeResourceResponse execute(StateChangeResourceCommand commandRequest) {
+    public StateChangeResourceResponse execute(StateChangeResourceCommand command) {
+        BibliographyResource resource = bibliographyRepository.findById(command.id())
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException(
+                        "Resource not found: " + command.id()));
 
-        Optional<BibliographyResource> bibliographyResource = bibliographyRepository.findById(commandRequest.id());
-        if (bibliographyResource.isEmpty()) {
-            throw new RuntimeException();
+        resourceAuthorizationService.editResource(command.userId());
+
+        if (resource.isActive()) {
+            throw new InvalidStateException("Resource is already active: " + command.id());
         }
-        resourceAuthorizationService.editResource(commandRequest.userId());
-        if (!(bibliographyResource.get() instanceof PhysicalResource a)) {
-            throw new DomainException("Resource cannot be published.");
-        }
-        a.publish(commandRequest.userId());
 
-        bibliographyRepository.save(a);
 
-        return ResourceMapper.stateToResponse(a, a.getState());
+        resource.activate();
+        bibliographyRepository.save(resource);
+
+        return new StateChangeResourceResponse(resource.getId(), ResourceState.AVAILABLE);
     }
-
 }

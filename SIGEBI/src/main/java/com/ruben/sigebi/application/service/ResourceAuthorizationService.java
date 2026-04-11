@@ -1,4 +1,7 @@
 package com.ruben.sigebi.application.service;
+import com.ruben.sigebi.domain.common.exception.BusinessRuleViolationException;
+import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
+import com.ruben.sigebi.domain.common.exception.InvalidStateException;
 import com.ruben.sigebi.domain.roles.entity.Role;
 import com.ruben.sigebi.domain.User.entity.User;
 import com.ruben.sigebi.domain.roles.repository.RoleRepository;
@@ -18,86 +21,48 @@ public class ResourceAuthorizationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BibliographyRepository bibliographyRepository;
-    public ResourceAuthorizationService(UserRepository userRepository, RoleRepository roleRepository, BibliographyRepository bibliographyRepository) {
+
+    public ResourceAuthorizationService(UserRepository userRepository,
+                                        RoleRepository roleRepository,
+                                        BibliographyRepository bibliographyRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bibliographyRepository = bibliographyRepository;
     }
 
     public void deleteResource(UserId userId, ResourceID resourceId) {
-        hasPermissionToDelete(userId);
-        var resource = bibliographyRepository.findById(resourceId);
-        if (resource.isEmpty()) {
-            throw new RuntimeException("resource not found");
-        }
-        resource.get().deactivate();
+        checkPermission(userId, "RESOURCE", "DELETE");
+        var resource = bibliographyRepository.findById(resourceId)
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException("Resource not found: " + resourceId));
+        resource.deactivate();
     }
 
-    public void addResource(UserId userId){
-        hasPermissionToAdd(userId);
+    public void addResource(UserId userId) {
+        checkPermission(userId, "RESOURCE", "ADD");
     }
-    public void editResource(UserId userId){
-        hasPermissionToEdit(userId);
+
+    public void editResource(UserId userId) {
+        checkPermission(userId, "RESOURCE", "EDIT");
     }
 
 
-    private void hasPermissionToDelete(UserId userId){
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()){
-            throw new RuntimeException("User does not exist.");
-        }
-        if (!user.get().isActive()){
-            throw new DomainException("User is not active.");
-        }
-        for (var a : user.get().getRoles()){
-            Optional<Role> roles = roleRepository.findById(a);
-            if (roles.isEmpty()){
-                throw new RuntimeException("Role "+a+" does not exist.");
-            }
-            if ((roles.get().hasPermission(new Permission("RESOURCE","DELETE")) )){
-                break;
-            }
-        }
-        throw new DomainException("User does not have permission to delete a resource.");
-    }
+    private void checkPermission(UserId userId, String source, String action) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException("User not found: " + userId));
 
-    private void hasPermissionToAdd(UserId userId){
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()){
-            throw new RuntimeException("User does not exist.");
+        if (!user.isActive()) {
+            throw new InvalidStateException("User is not active: " + userId);
         }
-        if (!user.get().isActive()){
-            throw new DomainException("User is not active.");
-        }
-        for (var a : user.get().getRoles()){
-            Optional<Role> roles = roleRepository.findById(a);
-            if (roles.isEmpty()){
-                throw new RuntimeException("Role "+a+" does not exist.");
-            }
-            if ((roles.get().hasPermission(new Permission("RESOURCE","ADD")) )){
-                break;
-            }
-        }
-        throw new DomainException("User does not have permission to add a resource.");
-    }
-    private void hasPermissionToEdit(UserId userId){
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()){
-            throw new RuntimeException("User does not exist.");
-        }
-        if (!user.get().isActive()){
-            throw new DomainException("User is not active.");
-        }
-        for (var a : user.get().getRoles()){
-            Optional<Role> roles = roleRepository.findById(a);
-            if (roles.isEmpty()){
-                throw new RuntimeException("Role "+a+" does not exist.");
-            }
-            if ((roles.get().hasPermission(new Permission("RESOURCE","EDIT")) )){
-                break;
-            }
-        }
-        throw new DomainException("User does not have permission to edit a resource.");
-    }
 
+        for (var roleId : user.getRoles()) {
+            Role role = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new ElementNotFoundInTheDatabaseException("Role not found: " + roleId));
+            if (role.hasPermission(new Permission(source, action))) {
+                return;
+            }
+        }
+
+        throw new BusinessRuleViolationException(
+                "User does not have permission [" + source + ":" + action + "]: " + userId);
+    }
 }

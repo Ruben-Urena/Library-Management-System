@@ -2,14 +2,17 @@ package com.ruben.sigebi.infrastructure.persistence.repository.loanRepo.adapter;
 
 import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.common.enums.Status;
+import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
 import com.ruben.sigebi.domain.loan.entity.Loan;
 import com.ruben.sigebi.domain.loan.enums.PendingState;
 import com.ruben.sigebi.domain.loan.repository.LoanRepository;
 import com.ruben.sigebi.domain.loan.valueObjects.LoanId;
 import com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource.BibliographyResourceEntity;
+import com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource.ResourceCopyEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.loan.LoanEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.UserEntity;
 import com.ruben.sigebi.infrastructure.persistence.mapper.LoanMapper;
+import com.ruben.sigebi.infrastructure.persistence.repository.ResourceCopyRepo.SpringDataResourceCopyRepository;
 import com.ruben.sigebi.infrastructure.persistence.repository.bookRepo.SpringDataResourceRepository;
 import com.ruben.sigebi.infrastructure.persistence.repository.loanRepo.SpringDataLoanRepository;
 import com.ruben.sigebi.infrastructure.persistence.repository.userRepo.SpringDataUserRepository;
@@ -22,18 +25,17 @@ import java.util.stream.Collectors;
 
 @Repository
 public class JpaLoanRepository implements LoanRepository {
-
     private final SpringDataUserRepository userRepository;
-    private final SpringDataResourceRepository resourceRepository;
+    private final SpringDataResourceCopyRepository copyRepository;
     private final SpringDataLoanRepository repository;
 
     public JpaLoanRepository(
             SpringDataUserRepository userRepository,
-            SpringDataResourceRepository resourceRepository,
+            SpringDataResourceCopyRepository copyRepository,
             SpringDataLoanRepository repository
     ) {
         this.userRepository = userRepository;
-        this.resourceRepository = resourceRepository;
+        this.copyRepository = copyRepository;
         this.repository = repository;
     }
 
@@ -41,14 +43,15 @@ public class JpaLoanRepository implements LoanRepository {
     public void save(Loan loan) {
         UserEntity user = userRepository
                 .findById(loan.getUserId().value())
-                .orElseThrow();
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException(
+                        "User not found: " + loan.getUserId().value()));
 
-        BibliographyResourceEntity resource = resourceRepository
-                .findById(loan.getResourceId().value())
-                .orElseThrow();
+        ResourceCopyEntity resourceCopy = copyRepository
+                .findById(loan.getCopyId().value())
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException(
+                        "ResourceCopy not found: " + loan.getCopyId().value()));
 
-        LoanEntity entity = LoanMapper.toEntity(loan, user, resource);
-        repository.save(entity);
+        repository.save(LoanMapper.toEntity(loan, user, resourceCopy));
     }
 
     @Override
@@ -59,7 +62,7 @@ public class JpaLoanRepository implements LoanRepository {
 
     @Override
     public Set<Loan> findByUser(UserId userId) {
-        return repository.findByUser_Id(userId.value()) // ✅ findByUserId no findByUser
+        return repository.findByUser_Id(userId.value())
                 .stream()
                 .map(LoanMapper::toDomain)
                 .collect(Collectors.toSet());
@@ -67,11 +70,7 @@ public class JpaLoanRepository implements LoanRepository {
 
     @Override
     public List<Loan> findLoansByUserStateAndStatus(UserId userId, PendingState pendingState, Status status) {
-        return repository.findLoansByUserStateAndStatus(
-                        userId.value(),
-                        pendingState,
-                        status
-                )
+        return repository.findLoansByUserStateAndStatus(userId.value(), pendingState, status)
                 .stream()
                 .map(LoanMapper::toDomain)
                 .toList();
@@ -79,10 +78,7 @@ public class JpaLoanRepository implements LoanRepository {
 
     @Override
     public List<Loan> findLoansByStateAndStatus(PendingState pendingState, Status status) {
-        return repository.findLoansByPendingStateAndStatus(
-                        pendingState,
-                        status
-                )
+        return repository.findLoansByPendingStateAndStatus(pendingState, status)
                 .stream()
                 .map(LoanMapper::toDomain)
                 .toList();
@@ -90,10 +86,7 @@ public class JpaLoanRepository implements LoanRepository {
 
     @Override
     public List<Loan> findAllActiveOverdueLoans() {
-        return repository.findAllActiveOverdueLoans(
-                        Status.ACTIVE,
-                        PendingState.OVERDUE
-                )
+        return repository.findAllActiveOverdueLoans(Status.ACTIVE, PendingState.OVERDUE)
                 .stream()
                 .map(LoanMapper::toDomain)
                 .toList();
@@ -115,10 +108,7 @@ public class JpaLoanRepository implements LoanRepository {
 
     @Override
     public Set<Loan> findByStatusAndUserId(Status status, UserId userId) {
-        return repository.findByStatusAndUserId(
-                        status,
-                        userId.value()
-                )
+        return repository.findByStatusAndUserId(status, userId.value())
                 .stream()
                 .map(LoanMapper::toDomain)
                 .collect(Collectors.toSet());

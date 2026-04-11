@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AggregateRoot {
-//    private Status entityState;
+
 
     private final List<DomainEvent> domainEvents = new ArrayList<>();
 
@@ -19,11 +19,5 @@ public abstract class AggregateRoot {
         return events;
     }
 
-//    public Status getEntityState() {
-//        return entityState;
-//    }
-//
-//    public void setEntityState(Status entityState) {
-//        this.entityState = entityState;
-//    }
+
 }

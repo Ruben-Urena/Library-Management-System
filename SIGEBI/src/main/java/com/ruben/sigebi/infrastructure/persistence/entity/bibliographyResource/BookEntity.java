@@ -11,8 +11,13 @@ public class BookEntity extends PhysicalResourceEntity {
     @Embedded
     private ISBNEmbeddable isbn;
 
+
     public BookEntity() {
 
+    }
+
+    public BookEntity(ISBNEmbeddable isbn) {
+        this.isbn = isbn;
     }
 
     public ISBNEmbeddable getIsbn() {

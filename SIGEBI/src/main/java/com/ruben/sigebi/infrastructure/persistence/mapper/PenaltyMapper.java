@@ -10,47 +10,34 @@ import com.ruben.sigebi.infrastructure.persistence.entity.user.UserEntity;
 
 import java.util.UUID;
 
+
 public class PenaltyMapper {
 
-    private PenaltyMapper(){}
+    private PenaltyMapper() {}
 
-    public static PenaltyEntity toEntity(
-            Penalty penalty,
-            UserEntity user,
-            LoanEntity loan
-    ){
-
+    public static PenaltyEntity toEntity(Penalty penalty, UserEntity user, LoanEntity loan) {
         PenaltyEntity entity = new PenaltyEntity();
-        entity.setStatus(penalty.getStatus());
-
         entity.setId(penalty.getPenaltyId().value());
-
+        entity.setStatus(penalty.getStatus());
         entity.setUser(user);
-
         entity.setLoan(loan);
-
         entity.setStartDate(penalty.getStartDate());
-
         entity.setEndDate(penalty.getEndDate());
-
         entity.setDescription(penalty.getDescription());
-
         return entity;
     }
 
-
-    public static Penalty toDomain(PenaltyEntity entity){
-        var _userid =  entity.getUser().getId().toString();
-        var _loanId =  entity.getLoan().getId().toString();
-        var _penaltyId =  entity.getId().toString();
-
-        var a =  new Penalty(
-                new PenaltyId(UUID.fromString(_penaltyId)),
-                new UserId(UUID.fromString(_userid)),
-                new LoanId(UUID.fromString(_loanId)),
+    public static Penalty toDomain(PenaltyEntity entity) {
+        
+        Penalty penalty = new Penalty(
+                new PenaltyId(entity.getId()),
+                new UserId(entity.getUser().getId()),
+                new LoanId(entity.getLoan().getId()),
+                entity.getDescription(),
+                entity.getStartDate(),
                 entity.getEndDate()
         );
-        a.setStatus(entity.getStatus());
-        return a;
+        penalty.setStatus(entity.getStatus());
+        return penalty;
     }
 }

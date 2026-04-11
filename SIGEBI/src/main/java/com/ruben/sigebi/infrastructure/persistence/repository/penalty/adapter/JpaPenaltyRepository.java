@@ -3,8 +3,10 @@ package com.ruben.sigebi.infrastructure.persistence.repository.penalty.adapter;
 import com.ruben.sigebi.domain.User.repository.UserRepository;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.PenaltyId;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceCopyId;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.domain.common.enums.Status;
+import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
 import com.ruben.sigebi.domain.loan.repository.LoanRepository;
 import com.ruben.sigebi.domain.loan.valueObjects.LoanId;
 import com.ruben.sigebi.domain.penalty.entity.Penalty;
@@ -25,15 +27,19 @@ import java.util.UUID;
 
 @Repository
 public class JpaPenaltyRepository implements PenaltyRepository {
-    private final SpringDataPenaltyRepository  springDataPenaltyRepository;
+
+    private final SpringDataPenaltyRepository springDataPenaltyRepository;
     private final SpringDataUserRepository springDataUserRepository;
     private final SpringDataLoanRepository springDataLoanRepository;
 
-    public JpaPenaltyRepository(SpringDataPenaltyRepository springDataPenaltyRepository, SpringDataUserRepository springDataUserRepository, SpringDataLoanRepository springDataLoanRepository) {
+    public JpaPenaltyRepository(SpringDataPenaltyRepository springDataPenaltyRepository,
+                                SpringDataUserRepository springDataUserRepository,
+                                SpringDataLoanRepository springDataLoanRepository) {
         this.springDataPenaltyRepository = springDataPenaltyRepository;
         this.springDataUserRepository = springDataUserRepository;
         this.springDataLoanRepository = springDataLoanRepository;
     }
+
     @Override
     public Optional<Penalty> findById(PenaltyId penaltyId) {
         return springDataPenaltyRepository
@@ -43,13 +49,13 @@ public class JpaPenaltyRepository implements PenaltyRepository {
 
     @Override
     public void save(Penalty penalty) {
-        UserEntity user = springDataUserRepository
-                .findById(penalty.getUserId().value())
-                .orElseThrow();
+        UserEntity user = springDataUserRepository.findById(penalty.getUserId().value())
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException(
+                        "User not found: " + penalty.getUserId()));
 
-        LoanEntity loan = springDataLoanRepository
-                .findById(penalty.getLoanId().loanID())
-                .orElseThrow();
+        LoanEntity loan = springDataLoanRepository.findById(penalty.getLoanId().loanID())
+                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException(
+                        "Loan not found: " + penalty.getLoanId()));
 
         PenaltyEntity entity = PenaltyMapper.toEntity(penalty, user, loan);
         springDataPenaltyRepository.save(entity);
@@ -58,11 +64,7 @@ public class JpaPenaltyRepository implements PenaltyRepository {
     @Override
     public Optional<Penalty> findActivePenaltyByLoan(LoanId loanId, UserId userId) {
         return springDataPenaltyRepository
-                .findByLoanIdAndUserIdAndStatus(
-                        loanId.loanID(),
-                        userId.value(),
-                        Status.ACTIVE
-                )
+                .findByLoanIdAndUserIdAndStatus(loanId.loanID(), userId.value(), Status.ACTIVE)
                 .map(PenaltyMapper::toDomain);
     }
 
@@ -73,15 +75,11 @@ public class JpaPenaltyRepository implements PenaltyRepository {
                 .stream()
                 .map(PenaltyMapper::toDomain)
                 .toList();
-
-        return penalties.isEmpty()
-                ? Optional.empty()
-                : Optional.of(penalties);
+        return penalties.isEmpty() ? Optional.empty() : Optional.of(penalties);
     }
 
     @Override
     public List<Penalty> findAllActiveAndDueDatePenalty() {
-        // usa findByStatusAndEndDateBefore (antes era findByStatusAndDueDateBefore)
         return springDataPenaltyRepository
                 .findByStatusAndEndDateBefore(Status.ACTIVE, Instant.now())
                 .stream()
@@ -90,19 +88,17 @@ public class JpaPenaltyRepository implements PenaltyRepository {
     }
 
     @Override
-    public Optional<List<Penalty>> findPenaltyByResourceId(ResourceID resourceID) {
+    public Optional<List<Penalty>> findPenaltyByCopyId(ResourceCopyId copyId) {
+
         List<Penalty> penalties = springDataPenaltyRepository
-                .findByResourceId(resourceID.value())
+                .findByCopyId(copyId.value())
                 .stream()
                 .map(PenaltyMapper::toDomain)
                 .toList();
-
-        return penalties.isEmpty()
-                ? Optional.empty()
-                : Optional.of(penalties);
+        return penalties.isEmpty() ? Optional.empty() : Optional.of(penalties);
     }
-
 }
+
 
 
 

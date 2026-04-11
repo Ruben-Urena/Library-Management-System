@@ -8,30 +8,18 @@ import java.util.UUID;
 
 public record LoanResourceResponse(
         UUID loanId,
-        UUID resourceID,
+        UUID copyId,       // ✅ es la copia específica prestada, no el recurso padre
         UUID userId,
-        boolean susses,
+        boolean success,
         String message,
-        String returnDate
+        String dueDate
 ) {
-    public static LoanResourceResponse susses(UUID loanId, UUID resourceID, UUID userId, String returnDate){
-        return new LoanResourceResponse(
-                loanId,
-                resourceID,
-                userId,
-                true,
-                "Loan created",
-                returnDate
-        );
+    public static LoanResourceResponse success(UUID loanId, UUID copyId, UUID userId, String dueDate) {
+        return new LoanResourceResponse(loanId, copyId, userId, true, "Loan created successfully.", dueDate);
     }
-    public static LoanResourceResponse failure(String message){
-        return new LoanResourceResponse(
-                null,
-                null,
-                null,
-                false,
-                message,
-                null);
 
+    public static LoanResourceResponse failure(String message) {
+        return new LoanResourceResponse(null, null, null, false, message, null);
     }
 }
+

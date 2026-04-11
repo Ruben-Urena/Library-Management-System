@@ -6,6 +6,7 @@ import com.ruben.sigebi.application.interfaces.UseCase;
 import com.ruben.sigebi.domain.author.entity.Author;
 import com.ruben.sigebi.domain.author.repository.AuthorRepository;
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
+import com.ruben.sigebi.domain.bibliographyResource.repository.ResourceCopyRepository;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
 import com.ruben.sigebi.domain.common.objectValue.FullName;
 import com.ruben.sigebi.domain.roles.repository.RoleRepository;
@@ -20,51 +21,62 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class AddResourceUseCase implements UseCase<AddResourceResponse, AddResourceCommand>{
+public class AddResourceUseCase implements UseCase<AddResourceResponse, AddResourceCommand> {
 
-    private final BibliographyRepository  bibliographyRepository;
-    private final UserRepository userRepository;
+    private final BibliographyRepository bibliographyRepository;
+    private final ResourceCopyRepository resourceCopyRepository;
     private final ResourceAuthorizationService resourceAuthorizationService;
     private final ResourceFactory resourceFactory;
     private final AuthorRepository authorRepository;
 
-    public AddResourceUseCase(BibliographyRepository bibliographyRepository, UserRepository userRepository, RoleRepository roleRepository, ResourceFactory resourceFactory, AuthorRepository authorRepository) {
+    public AddResourceUseCase(BibliographyRepository bibliographyRepository,
+                              ResourceCopyRepository resourceCopyRepository,
+                              UserRepository userRepository,
+                              RoleRepository roleRepository,
+                              ResourceFactory resourceFactory,
+                              AuthorRepository authorRepository) {
         this.bibliographyRepository = bibliographyRepository;
-        this.userRepository = userRepository;
+        this.resourceCopyRepository = resourceCopyRepository;
         this.resourceFactory = resourceFactory;
         this.authorRepository = authorRepository;
-        resourceAuthorizationService = new ResourceAuthorizationService(userRepository, roleRepository,bibliographyRepository);
+        this.resourceAuthorizationService = new ResourceAuthorizationService(
+                userRepository, roleRepository, bibliographyRepository);
     }
 
-
     @Override
-    public AddResourceResponse execute(AddResourceCommand commandRequest){
-        BibliographyResource _resource;
+    public AddResourceResponse execute(AddResourceCommand command) {
+
+
         Set<AuthorId> authorIdSet = new HashSet<>();
-        Set<AddAuthorCommand> authors = new HashSet<>(commandRequest.authors());
-        for (var x : authors){
-            var authorOptionals = authorRepository.findByFullName(x.fullName());
-            if (authorOptionals.isPresent()) {
-                authorIdSet.add(authorOptionals.get().getAuthorId());
-            }else {
-                var newAuthor = new Author(new AuthorId(UUID.randomUUID()), new FullName(x.fullName().name(),x.fullName().lastName()));
-                authorIdSet.add(newAuthor.getAuthorId());
+        for (AddAuthorCommand authorCmd : command.authors()) {
+            var existing = authorRepository.findByFullName(authorCmd.fullName());
+            if (existing.isPresent()) {
+                authorIdSet.add(existing.get().getAuthorId());
+            } else {
+                var newAuthor = new Author(
+                        new AuthorId(UUID.randomUUID()),
+                        new FullName(authorCmd.fullName().name(), authorCmd.fullName().lastName())
+                );
                 authorRepository.save(newAuthor);
+                authorIdSet.add(newAuthor.getAuthorId());
             }
         }
 
-        var listOfResources = resourceFactory.create(commandRequest,authorIdSet);
-        _resource = listOfResources.getFirst();
 
-        for (var  resource : listOfResources) {
-            bibliographyRepository.save(resource);
-        }
+        var result = resourceFactory.create(command, authorIdSet);
+        BibliographyResource resource = result.resource();
 
-        return AddResourceResponse.succes(
 
-                _resource.getMainData(),
-                _resource.getResourceType(),
-                _resource.getId()
+        bibliographyRepository.save(resource);
+
+
+        result.copies().forEach(resourceCopyRepository::save);
+
+        return AddResourceResponse.success(
+                resource.getMainData(),
+                resource.getResourceType(),
+                resource.getId(),
+                result.copies().size()
         );
     }
 }

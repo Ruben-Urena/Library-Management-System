@@ -1,5 +1,6 @@
 package com.ruben.sigebi.domain.loan.entity;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
+import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceCopyId;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.domain.common.exception.InvalidFieldException;
 import com.ruben.sigebi.domain.common.exception.InvalidStateException;
@@ -17,32 +18,31 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Loan extends ActivatableAggregate {
-
     private final LoanId loanID;
     private final UserId userId;
-    private final ResourceID sourceID;
+    private final ResourceCopyId copyId;
     private final Instant startDate;
     private Instant dueDate;
-    private PendingState  pendingState;
+    private PendingState pendingState;
 
-    public Loan(UserId userId, UUID loanId, ResourceID resourceId, Instant endDate) {
 
+    public Loan(UserId userId, UUID loanId, ResourceCopyId copyId, Instant endDate) {
         this.userId = Objects.requireNonNull(userId);
-        this.sourceID = Objects.requireNonNull(resourceId);
+        this.copyId = Objects.requireNonNull(copyId);
         this.startDate = Instant.now();
         this.dueDate = Objects.requireNonNull(endDate);
         Objects.requireNonNull(loanId);
         this.loanID = new LoanId(loanId);
         this.pendingState = PendingState.ON_TIME;
         activate();
-//        addDomainEvent(new LoanCreated(getResourceId(),getLoanID(),getUserId(),this.startDate));
     }
 
-    public Loan(LoanId loanID, UserId userId, ResourceID sourceID,
+
+    public Loan(LoanId loanID, UserId userId, ResourceCopyId copyId,
                 Instant startDate, Instant dueDate, PendingState pendingState) {
         this.loanID = Objects.requireNonNull(loanID);
         this.userId = Objects.requireNonNull(userId);
-        this.sourceID = Objects.requireNonNull(sourceID);
+        this.copyId = Objects.requireNonNull(copyId);
         this.startDate = Objects.requireNonNull(startDate);
         this.dueDate = Objects.requireNonNull(dueDate);
         this.pendingState = Objects.requireNonNull(pendingState);
@@ -54,51 +54,44 @@ public class Loan extends ActivatableAggregate {
 
     public void extendDueDate(int days) {
         if (days < 1) {
-            throw new InvalidFieldException("cannot put negative or zero days: "+days);
+            throw new InvalidFieldException("cannot put negative or zero days: " + days);
         }
-
-        if (!isActive() ) {
-            throw new InvalidStateException("Loan cannot be extended while inactive: "+this.getStatus());
+        if (!isActive()) {
+            throw new InvalidStateException("Loan cannot be extended while inactive: " + this.getStatus());
         }
-
         if (this.dueDate.isBefore(Instant.now())) {
-            throw new BusinessLoanViolationException("Loan cannot be extended after it is overdue: "+ "Today: "+Instant.now()+" Due date: "+this.dueDate);
+            throw new BusinessLoanViolationException("Loan cannot be extended after it is overdue: "
+                    + "Today: " + Instant.now() + " Due date: " + this.dueDate);
         }
-
         this.dueDate = this.dueDate.plus(Duration.ofDays(days));
     }
 
-
-    public boolean isOverdue(){
-        return  this.pendingState.equals(PendingState.OVERDUE);
+    public boolean isOverdue() {
+        return this.pendingState.equals(PendingState.OVERDUE);
     }
 
-
-    public void returnLoan(Instant returnedAt){
+    public void returnLoan(Instant returnedAt) {
         Objects.requireNonNull(returnedAt);
-        if (!(isActive())){
-            throw new InvalidStateException("Loan inactive:"+ this.loanID);
+        if (!isActive()) {
+            throw new InvalidStateException("Loan inactive: " + this.loanID);
         }
         deactivate();
-        addDomainEvent(new LoanReturned(getResourceId(), getLoanID(),getUserId(),returnedAt));
+//        addDomainEvent(new LoanReturned(getCopyId(), getLoanID(), getUserId(), returnedAt));
     }
 
-
-
-    public void markAsOverdue(){
+    public void markAsOverdue() {
         if (!Instant.now().isAfter(this.dueDate)) {
-            throw new BusinessLoanViolationException("Cannot mark as overdue before the due date. ");
+            throw new BusinessLoanViolationException("Cannot mark as overdue before the due date.");
         }
-        if(isOverdue()){
+        if (isOverdue()) {
             throw new BusinessLoanViolationException("Loan is already marked as overdue");
         }
-        if (!isActive()){
+        if (!isActive()) {
             throw new InvalidStateException("Loan is inactive");
         }
-        this.pendingState =  PendingState.OVERDUE;
-        addDomainEvent(new LoanOverdue(getResourceId(),getLoanID(),getUserId(),Instant.now()));
+        this.pendingState = PendingState.OVERDUE;
+//        addDomainEvent(new LoanOverdue(getCopyId(), getLoanID(), getUserId(), Instant.now()));
     }
-
 
     public LoanId getLoanID() {
         return loanID;
@@ -108,8 +101,8 @@ public class Loan extends ActivatableAggregate {
         return userId;
     }
 
-    public ResourceID getResourceId() {
-        return sourceID;
+    public ResourceCopyId getCopyId() {
+        return copyId;
     }
 
     public Instant getStartDate() {
@@ -123,7 +116,6 @@ public class Loan extends ActivatableAggregate {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-
         Loan loan = (Loan) o;
         return getLoanID().equals(loan.getLoanID());
     }

@@ -7,7 +7,6 @@ import com.ruben.sigebi.domain.common.exception.BusinessRuleViolationException;
 import com.ruben.sigebi.domain.common.exception.InvalidationException;
 import com.ruben.sigebi.domain.common.objectValue.ActivatableAggregate;
 import com.ruben.sigebi.domain.common.objectValue.FullName;
-
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
@@ -25,20 +24,14 @@ public abstract class BibliographyResource extends ActivatableAggregate {
     private ContentData contentData;
 
 
-    public BibliographyResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorId){
-        this.creditsData = new CreditsData(authorId, null,null);
-        this.resourceID = new ResourceID(UUID.randomUUID());
 
-        this.language = Objects.requireNonNull(language);
-        this.mainData = Objects.requireNonNull(mainData);
-        Objects.requireNonNull(resourceType);
-        if (resourceType.isBlank()){
-            throw new InvalidationException("resource type cannot be blank");
-        }
-        this.resourceType = resourceType;
+    public BibliographyResource(
+            ResourceMainData mainData,
+            Language language,
+            String resourceType,
+            Set<AuthorId> authorId,
+            ResourceID resourceID){
 
-    }
-    public BibliographyResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorId, ResourceID resourceID){
         this.creditsData = new CreditsData(authorId, null,null);
         this.resourceID = Objects.requireNonNull(resourceID);
         this.language = Objects.requireNonNull(language);
@@ -48,42 +41,40 @@ public abstract class BibliographyResource extends ActivatableAggregate {
             throw new InvalidationException("resource type cannot be blank");
         }
         this.resourceType = resourceType;
-
     }
 
-
-
-
-    public ContentData getContentData() {
-        return contentData;
-    }
-
-    // En BibliographyRepository o PhysicalResource
     public BibliographyResource(
             ResourceID resourceID,
             Language language,
-            ResourceMainData mainData,
-            String resourceType,
             CreditsData creditsData,
-            PublicationData publicationData
-    ) {
+            ResourceMainData mainData,
+            PublicationData publicationData,
+            String resourceType,
+            String edition,
+            ContentData contentData){
 
         this.resourceID = resourceID;
         this.language = language;
-        this.mainData = mainData;
-        this.resourceType = resourceType;
         this.creditsData = creditsData;
+        this.mainData = mainData;
         this.publicationData = publicationData;
+        this.resourceType = resourceType;
+        this.edition = edition;
+        this.contentData = contentData;
 
     }
-    public abstract String universalIdentifier();
 
+    public abstract String universalIdentifier();
     public void setContentData(ContentData contentData) {
         Objects.requireNonNull(contentData);
         if (this.contentData != null){
             throw new BusinessRuleViolationException("Credits data is already set");
         }
         this.contentData = contentData;
+    }
+
+    public ContentData getContentData() {
+        return contentData;
     }
 
 

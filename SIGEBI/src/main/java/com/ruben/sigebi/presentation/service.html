@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGEBI</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f4f0;
+  --surface:#ffffff;
+  --border:#e8e6e0;
+  --border2:#d4d1c8;
+  --text:#1a1916;
+  --mid:#5a5650;
+  --muted:#9c9890;
+  --accent:#1a1916;
+  --green:#1d6b45;
+  --green-bg:#eef7f2;
+  --red:#b33a2a;
+  --red-bg:#fdf2f0;
+  --amber:#8a5c00;
+  --amber-bg:#fff8ed;
+  --blue:#1a4080;
+  --blue-bg:#f0f4fc;
+  --r:8px;--r2:14px;
+  --font:'Outfit',sans-serif;
+  --font-d:'Playfair Display',serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;font-size:15px;line-height:1.5}
+
+/* NAV */
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2.5rem;display:flex;align-items:center;height:58px;gap:2rem;position:sticky;top:0;z-index:50}
+.brand{font-family:var(--font-d);font-size:1.3rem;letter-spacing:-0.01em;color:var(--text);font-style:italic}
+.brand b{font-style:normal;font-weight:700}
+.nav-links{display:flex;gap:0.25rem;margin-left:0.5rem}
+.nl{padding:0.35rem 0.85rem;border-radius:6px;font-size:0.875rem;color:var(--mid);cursor:pointer;background:none;border:none;font-family:var(--font);transition:all .15s}
+.nl:hover{background:var(--bg);color:var(--text)}
+.nl.on{background:var(--text);color:#fff}
+.nav-end{margin-left:auto;display:flex;align-items:center;gap:1rem}
+.user-chip{display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--mid)}
+.ava{width:30px;height:30px;border-radius:50%;background:var(--bg);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;color:var(--mid)}
+
+/* LAYOUT */
+.wrap{display:flex;flex:1}
+.side{width:200px;padding:1.5rem 0;flex-shrink:0;border-right:1px solid var(--border);background:var(--surface)}
+.s-sec{margin-bottom:1.5rem}
+.s-lbl{font-size:0.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:0 1rem 0.4rem}
+.si{display:flex;align-items:center;gap:9px;padding:0.45rem 1rem;font-size:0.85rem;color:var(--mid);cursor:pointer;background:none;border:none;width:100%;text-align:left;font-family:var(--font);border-left:2px solid transparent;transition:all .12s}
+.si:hover{color:var(--text);background:var(--bg)}
+.si.on{color:var(--text);font-weight:500;border-left-color:var(--text);background:var(--bg)}
+.si-ic{width:16px;font-size:15px;flex-shrink:0}
+.dot{margin-left:auto;min-width:18px;height:18px;background:var(--red);color:#fff;font-size:.6rem;font-weight:700;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+
+/* MAIN */
+main{flex:1;padding:2.5rem;max-width:1100px}
+.pg{display:none}
+.pg.on{display:block}
+
+/* PAGE HEAD */
+.ph{margin-bottom:2rem}
+.ph-title{font-family:var(--font-d);font-size:2rem;font-weight:700;color:var(--text);line-height:1.1}
+.ph-sub{font-size:0.85rem;color:var(--muted);margin-top:.35rem}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.25rem;position:relative}
+.sc-label{font-size:0.72rem;color:var(--muted);font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-bottom:.5rem}
+.sc-val{font-size:2.2rem;font-weight:300;color:var(--text);line-height:1}
+.sc-note{font-size:0.72rem;color:var(--muted);margin-top:.4rem}
+.sc-stripe{position:absolute;top:0;left:1.25rem;right:1.25rem;height:2px;background:var(--border2);border-radius:0 0 2px 2px}
+.sc-stripe.g{background:var(--green)}
+.sc-stripe.r{background:var(--red)}
+.sc-stripe.a{background:var(--amber)}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:1.5rem}
+.ch{padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.ct{font-size:.95rem;font-weight:500}
+.cb{font-size:.8rem;color:var(--muted)}
+.cp{padding:1.5rem}
+
+/* SEARCH */
+.sbar{display:flex;gap:.75rem;margin-bottom:1.25rem}
+.si-inp{flex:1;padding:.6rem 1rem;border:1px solid var(--border2);border-radius:var(--r);font-family:var(--font);font-size:.875rem;background:var(--bg);color:var(--text);outline:none;transition:border-color .15s}
+.si-inp:focus{border-color:var(--text);background:var(--surface)}
+select.si-inp{cursor:pointer}
+.btn{padding:.55rem 1.1rem;border-radius:var(--r);font-family:var(--font);font-size:.85rem;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.bp{background:var(--text);color:#fff}.bp:hover{opacity:.85}
+.bs{background:var(--surface);color:var(--mid);border:1px solid var(--border2)}.bs:hover{background:var(--bg);color:var(--text)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-sm{padding:.3rem .7rem;font-size:.78rem}
+
+/* TABLE */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:.6rem 1rem;border-bottom:1.5px solid var(--border)}
+td{padding:.8rem 1rem;font-size:.875rem;border-bottom:1px solid var(--border);color:var(--mid);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+.t-title{font-weight:500;color:var(--text);font-size:.9rem}
+.t-sub{font-size:.75rem;color:var(--muted);margin-top:1px}
+
+/* BADGE */
+.bdg{display:inline-flex;align-items:center;gap:4px;padding:.2rem .6rem;border-radius:20px;font-size:.7rem;font-weight:600}
+.bdg::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.av{background:var(--green-bg);color:var(--green)}.av::before{background:var(--green)}
+.lo{background:var(--amber-bg);color:var(--amber)}.lo::before{background:var(--amber)}
+.ov{background:var(--red-bg);color:var(--red)}.ov::before{background:var(--red)}
+.ok{background:var(--blue-bg);color:var(--blue)}.ok::before{background:var(--blue)}
+
+/* LOAN CARDS */
+.lc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1.5rem;margin-bottom:.75rem;transition:border-color .15s}
+.lc:hover{border-color:var(--border2)}
+.lc-icon{width:44px;height:44px;border-radius:var(--r);background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.lc-info{flex:1}
+.lc-book{font-weight:500;font-size:.95rem;color:var(--text)}
+.lc-meta{font-size:.78rem;color:var(--muted);margin-top:2px}
+.lc-dates{font-size:.8rem;color:var(--mid);margin-top:6px}
+.lc-actions{display:flex;gap:.5rem;align-items:center;flex-shrink:0}
+.overdue-bar{background:var(--red);color:#fff;font-size:.72rem;font-weight:600;padding:.15rem .5rem;border-radius:4px}
+
+/* PENALTY */
+.pcard{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:var(--r2);padding:1.1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:.75rem}
+.pcard-body{flex:1}
+.pcard-title{font-weight:500;font-size:.9rem;color:var(--text)}
+.pcard-meta{font-size:.78rem;color:var(--muted);margin-top:3px}
+
+/* FORM */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.fi{display:flex;flex-direction:column;gap:.35rem}
+.fi.full{grid-column:1/-1}
+label{font-size:.78rem;font-weight:500;color:var(--mid)}
+input,textarea{padding:.6rem .875rem;border:1px solid var(--border2);border-radius:var(--r);font-family:var(--font);font-size:.875rem;background:var(--bg);color:var(--text);outline:none;transition:border .15s}
+input:focus,textarea:focus{border-color:var(--text);background:var(--surface)}
+input:disabled{opacity:.5;cursor:not-allowed}
+textarea{resize:vertical;min-height:72px}
+.fa{display:flex;justify-content:flex-end;gap:.75rem;margin-top:1.25rem}
+
+/* POLICY */
+.policy{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1.25rem}
+.pi{display:flex;gap:10px;align-items:flex-start;padding:.875rem;background:var(--bg);border-radius:var(--r)}
+.pi-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.pi-t{font-size:.82rem;font-weight:500;color:var(--text);margin-bottom:2px}
+.pi-s{font-size:.75rem;color:var(--muted)}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(26,25,22,.45);z-index:200;align-items:center;justify-content:center}
+.mo.op{display:flex}
+.mb{background:var(--surface);border-radius:var(--r2);padding:2rem;max-width:440px;width:calc(100% - 2rem);border:1px solid var(--border)}
+.mt{font-family:var(--font-d);font-size:1.3rem;font-weight:700;margin-bottom:.875rem}
+.ms{font-size:.875rem;color:var(--mid);line-height:1.6}
+.ma{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem}
+
+/* SUCCESS CHIP */
+.found-chip{padding:.7rem 1rem;background:var(--green-bg);border:1px solid #b3dfc9;border-radius:var(--r);font-size:.85rem;color:var(--green);display:none;margin-bottom:1rem}
+
+/* TOAST */
+.ta{position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;display:flex;flex-direction:column;gap:.5rem}
+.t{padding:.7rem 1.1rem;border-radius:var(--r);font-size:.85rem;animation:su .2s ease;max-width:300px;font-family:var(--font)}
+.t.ok{background:var(--text);color:#fff}
+.t.s{background:var(--green);color:#fff}
+.t.e{background:var(--red);color:#fff}
+@keyframes su{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* EMPTY */
+.empty{text-align:center;padding:3rem;color:var(--muted);font-size:.875rem}
+.empty-i{font-size:2rem;opacity:.3;margin-bottom:.75rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand"><b>SIG</b>EBI</span>
+  <div class="nav-links">
+    <button class="nl on" onclick="sp('catalogo',this)">Catálogo</button>
+    <button class="nl" onclick="sp('prestamos',this)">Préstamos</button>
+    <button class="nl" onclick="sp('penalizaciones',this)">Penalizaciones</button>
+    <button class="nl" onclick="sp('solicitar',this)">Solicitar</button>
+  </div>
+  <div class="nav-end">
+    <div class="user-chip">
+      <div class="ava">RU</div>
+      Ruben Ureña
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <aside class="side">
+    <div class="s-sec">
+      <div class="s-lbl">Catálogo</div>
+      <button class="si on" onclick="sp('catalogo',this)"><span class="si-ic">◻</span>Recursos</button>
+      <button class="si" onclick="sp('solicitar',this)"><span class="si-ic">＋</span>Solicitar préstamo</button>
+    </div>
+    <div class="s-sec">
+      <div class="s-lbl">Mi cuenta</div>
+      <button class="si" onclick="sp('prestamos',this)"><span class="si-ic">▤</span>Mis préstamos<span class="dot">2</span></button>
+      <button class="si" onclick="sp('penalizaciones',this)"><span class="si-ic">!</span>Penalizaciones<span class="dot">1</span></button>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- CATÁLOGO -->
+    <div class="pg on" id="pg-catalogo">
+      <div class="ph">
+        <div class="ph-title">Catálogo</div>
+        <div class="ph-sub">Explora los recursos bibliográficos disponibles</div>
+      </div>
+      <div class="stats">
+        <div class="sc"><div class="sc-stripe"></div><div class="sc-label">Total</div><div class="sc-val">1,284</div><div class="sc-note">recursos</div></div>
+        <div class="sc"><div class="sc-stripe g"></div><div class="sc-label">Disponibles</div><div class="sc-val">897</div><div class="sc-note">copias libres</div></div>
+        <div class="sc"><div class="sc-stripe a"></div><div class="sc-label">Prestados</div><div class="sc-val">312</div><div class="sc-note">en circulación</div></div>
+        <div class="sc"><div class="sc-stripe r"></div><div class="sc-label">Vencidos</div><div class="sc-val">18</div><div class="sc-note">sin devolver</div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Todos los recursos</div><button class="btn bp btn-sm" onclick="sp('solicitar')">+ Solicitar</button></div>
+        <div class="cp">
+          <div class="sbar">
+            <input class="si-inp" type="text" placeholder="Buscar título, autor o ISBN…" id="q-cat" oninput="filterRes()">
+            <select class="si-inp" id="q-type" onchange="filterRes()" style="max-width:160px">
+              <option value="">Todos los tipos</option>
+              <option value="BOOK">Libro</option>
+              <option value="JOURNAL">Revista</option>
+              <option value="THESIS">Tesis</option>
+            </select>
+          </div>
+          <div class="tw">
+            <table>
+              <thead><tr><th>Recurso</th><th>Tipo</th><th>Idioma</th><th>Copias</th><th>Estado</th><th></th></tr></thead>
+              <tbody id="res-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRÉSTAMOS -->
+    <div class="pg" id="pg-prestamos">
+      <div class="ph">
+        <div class="ph-title">Mis préstamos</div>
+        <div class="ph-sub">Estado y devolución de tus préstamos activos</div>
+      </div>
+      <div id="loans-list"></div>
+    </div>
+
+    <!-- PENALIZACIONES -->
+    <div class="pg" id="pg-penalizaciones">
+      <div class="ph">
+        <div class="ph-title">Penalizaciones</div>
+        <div class="ph-sub">Restricciones activas en tu cuenta</div>
+      </div>
+      <div id="pen-list"></div>
+    </div>
+
+    <!-- SOLICITAR -->
+    <div class="pg" id="pg-solicitar">
+      <div class="ph">
+        <div class="ph-title">Solicitar préstamo</div>
+        <div class="ph-sub">El sistema asignará la primera copia disponible</div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Datos de la solicitud</div></div>
+        <div class="cp">
+          <div class="found-chip" id="found-chip">✓ <strong id="found-name"></strong> — <span id="found-copies"></span> copias disponibles</div>
+          <div class="fg">
+            <div class="fi full">
+              <label>Buscar recurso</label>
+              <input type="text" id="sol-title" placeholder="Escribe el título…" oninput="searchSol()">
+            </div>
+            <div class="fi">
+              <label>ID del recurso</label>
+              <input type="text" id="sol-id" placeholder="Se completa automáticamente">
+            </div>
+            <div class="fi">
+              <label>Solicitante</label>
+              <input type="text" value="Ruben Ureña" disabled>
+            </div>
+            <div class="fi full">
+              <label>Observaciones (opcional)</label>
+              <textarea placeholder="Motivo u observación adicional…"></textarea>
+            </div>
+          </div>
+          <div class="fa">
+            <button class="btn bs" onclick="sp('catalogo')">Cancelar</button>
+            <button class="btn bp" onclick="doLoan()">Confirmar solicitud</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Política de préstamos</div></div>
+        <div class="cp">
+          <div class="policy">
+            <div class="pi"><span class="pi-ico">📅</span><div><div class="pi-t">7 días</div><div class="pi-s">Duración estándar</div></div></div>
+            <div class="pi"><span class="pi-ico">🔁</span><div><div class="pi-t">Renovable</div><div class="pi-s">Sin reservas pendientes</div></div></div>
+            <div class="pi"><span class="pi-ico">⚠</span><div><div class="pi-t">7 días penalización</div><div class="pi-s">Por cada día de retraso</div></div></div>
+            <div class="pi"><span class="pi-ico">📦</span><div><div class="pi-t">Máx. 3 activos</div><div class="pi-s">Por usuario simultáneo</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL DEVOLVER -->
+<div class="mo" id="ret-modal">
+  <div class="mb">
+    <div class="mt">Confirmar devolución</div>
+    <div class="ms">¿Deseas registrar la devolución de <strong id="ret-name"></strong>?<br>La copia quedará disponible para otros usuarios.</div>
+    <div class="ma">
+      <button class="btn bs" onclick="closeMo('ret-modal')">Cancelar</button>
+      <button class="btn bp" onclick="doReturn()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="ta" id="ta"></div>
+
+<script>
+const RES=[
+  {id:'a1b2',title:'Clean Code',author:'Robert C. Martin',type:'BOOK',lang:'Inglés',copies:3,state:'available'},
+  {id:'e5f6',title:'Domain-Driven Design',author:'Eric Evans',type:'BOOK',lang:'Inglés',copies:1,state:'available'},
+  {id:'i9j0',title:'El Quijote',author:'Miguel de Cervantes',type:'BOOK',lang:'Español',copies:0,state:'loaned'},
+  {id:'m3n4',title:'Introducción a los Algoritmos',author:'Cormen et al.',type:'BOOK',lang:'Español',copies:2,state:'available'},
+  {id:'q7r8',title:'Revista ACMEI Vol.12',author:'ACMEI',type:'JOURNAL',lang:'Español',copies:1,state:'available'},
+  {id:'u1v2',title:'Spring Boot en Acción',author:'Craig Walls',type:'BOOK',lang:'Español',copies:4,state:'available'},
+  {id:'y5z6',title:'Patrones de Diseño GoF',author:'Gang of Four',type:'BOOK',lang:'Inglés',copies:0,state:'loaned'},
+];
+const LOANS=[
+  {id:'l001',book:'Clean Code',author:'Robert C. Martin',start:'2025-03-15',due:'2025-03-22',state:'OVERDUE',copyId:'c001'},
+  {id:'l002',book:'Domain-Driven Design',author:'Eric Evans',start:'2025-04-08',due:'2025-04-15',state:'ON_TIME',copyId:'c002'},
+];
+const PENS=[
+  {id:'p001',book:'Clean Code',loan:'l001',start:'2025-03-23',end:'2025-03-30'},
+];
+let retId=null;
+
+function sp(page,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+page).classList.add('on');
+  document.querySelectorAll('.nl').forEach(n=>n.classList.remove('on'));
+  document.querySelectorAll('.si').forEach(s=>s.classList.remove('on'));
+  if(btn){btn.classList.add('on')}
+  if(page==='prestamos')renderLoans();
+  if(page==='penalizaciones')renderPens();
+}
+
+function renderRes(list){
+  const tb=document.getElementById('res-tbody');
+  if(!list.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-i">◻</div>Sin resultados</div></td></tr>';return}
+  tb.innerHTML=list.map(r=>`
+    <tr>
+      <td><div class="t-title">${r.title}</div><div class="t-sub">${r.author}</div></td>
+      <td>${r.type}</td><td>${r.lang}</td>
+      <td style="font-weight:500;color:${r.copies>0?'var(--green)':'var(--red)'}">${r.copies}</td>
+      <td><span class="bdg ${r.copies>0?'av':'lo'}">${r.copies>0?'Disponible':'Prestado'}</span></td>
+      <td><button class="btn bp btn-sm" ${r.copies===0?'disabled':''} onclick="prefill('${r.id}','${r.title}',${r.copies})">Solicitar</button></td>
+    </tr>`).join('');
+}
+
+function filterRes(){
+  const q=document.getElementById('q-cat').value.toLowerCase();
+  const t=document.getElementById('q-type').value;
+  renderRes(RES.filter(r=>(!q||r.title.toLowerCase().includes(q)||r.author.toLowerCase().includes(q))&&(!t||r.type===t)));
+}
+
+function renderLoans(){
+  const el=document.getElementById('loans-list');
+  if(!LOANS.length){el.innerHTML='<div class="empty"><div class="empty-i">▤</div>Sin préstamos activos</div>';return}
+  el.innerHTML=LOANS.map(l=>`
+    <div class="lc">
+      <div class="lc-icon">📖</div>
+      <div class="lc-info">
+        <div class="lc-book">${l.book}</div>
+        <div class="lc-meta">${l.author}</div>
+        <div class="lc-dates">Inicio: ${l.start} · Vence: <span style="color:${l.state==='OVERDUE'?'var(--red)':'var(--text)'}; font-weight:500">${l.due}</span></div>
+      </div>
+      <div class="lc-actions">
+        <span class="bdg ${l.state==='OVERDUE'?'ov':'ok'}">${l.state==='OVERDUE'?'Vencido':'Al día'}</span>
+        <button class="btn bs btn-sm" onclick="openRet('${l.id}','${l.book}')">Devolver</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderPens(){
+  const el=document.getElementById('pen-list');
+  if(!PENS.length){el.innerHTML='<div class="empty"><div class="empty-i">✓</div>Sin penalizaciones activas</div>';return}
+  el.innerHTML=PENS.map(p=>`
+    <div class="pcard">
+      <div class="pcard-body">
+        <div class="pcard-title">Devolución tardía — ${p.book}</div>
+        <div class="pcard-meta">Desde ${p.start} hasta ${p.end} · ID: ${p.id}</div>
+      </div>
+      <span class="bdg ov">Activa</span>
+    </div>`).join('');
+}
+
+function prefill(id,title,copies){
+  document.getElementById('sol-id').value=id;
+  document.getElementById('sol-title').value=title;
+  document.getElementById('found-name').textContent=title;
+  document.getElementById('found-copies').textContent=copies;
+  document.getElementById('found-chip').style.display='block';
+  sp('solicitar');
+}
+
+function searchSol(){
+  const q=document.getElementById('sol-title').value.toLowerCase();
+  const f=RES.find(r=>r.title.toLowerCase().includes(q)&&r.copies>0&&q.length>2);
+  const chip=document.getElementById('found-chip');
+  if(f){
+    document.getElementById('found-name').textContent=f.title;
+    document.getElementById('found-copies').textContent=f.copies;
+    document.getElementById('sol-id').value=f.id;
+    chip.style.display='block';
+  }else chip.style.display='none';
+}
+
+function doLoan(){
+  if(!document.getElementById('sol-id').value){toast('Selecciona un recurso primero','e');return}
+  toast('Préstamo solicitado. Copia asignada exitosamente','s');
+  document.getElementById('sol-title').value='';
+  document.getElementById('sol-id').value='';
+  document.getElementById('found-chip').style.display='none';
+  setTimeout(()=>sp('prestamos'),1000);
+}
+
+function openRet(id,name){retId=id;document.getElementById('ret-name').textContent=name;document.getElementById('ret-modal').classList.add('op')}
+function closeMo(id){document.getElementById(id).classList.remove('op')}
+function doReturn(){
+  closeMo('ret-modal');
+  const i=LOANS.findIndex(l=>l.id===retId);
+  if(i!==-1)LOANS.splice(i,1);
+  toast('Devolución registrada. La copia está disponible','s');
+  renderLoans();
+}
+
+function toast(msg,type='ok'){
+  const a=document.getElementById('ta');
+  const t=document.createElement('div');
+  t.className='t '+type;t.textContent=msg;
+  a.appendChild(t);setTimeout(()=>t.remove(),3200);
+}
+
+renderRes(RES);
+</script>
+</body>
+</html>

@@ -9,6 +9,7 @@ import com.ruben.sigebi.application.usecases.loan.RequestLoanUseCase;
 import com.ruben.sigebi.application.usecases.loan.ReturnLoanUseCase;
 import com.ruben.sigebi.application.usecases.loan.view.GetUserLoansUseCase;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,43 +26,47 @@ public class LoanController {
     private final ReturnLoanUseCase returnLoanUseCase;
     private final GetUserLoansUseCase getUserLoansUseCase;
 
-
-    public LoanController(
-            RequestLoanUseCase requestLoanUseCase,
-            ReturnLoanUseCase returnLoanUseCase,
-            GetUserLoansUseCase getUserLoansUseCase
-
-    ) {
+    public LoanController(RequestLoanUseCase requestLoanUseCase,
+                          ReturnLoanUseCase returnLoanUseCase,
+                          GetUserLoansUseCase getUserLoansUseCase) {
         this.requestLoanUseCase = requestLoanUseCase;
         this.returnLoanUseCase = returnLoanUseCase;
         this.getUserLoansUseCase = getUserLoansUseCase;
-
     }
 
-
+    /**
+     * GET /api/loans/user/{userId}
+     * Devuelve todos los préstamos de un usuario.
+     */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<GetUserLoansResponse>> getUserLoans(
-            @PathVariable UUID userId
-    ) {
+    public ResponseEntity<List<GetUserLoansResponse>> getUserLoans(@PathVariable UUID userId) {
         return ResponseEntity.ok(getUserLoansUseCase.execute(userId));
     }
 
-
-
-    @PostMapping("/request/{userId}")
+    /**
+     * POST /api/loans/user/{userId}
+     * El usuario solicita un préstamo. El sistema asigna la primera copia disponible.
+     *
+     * Body: { "resourceID": "uuid-del-recurso" }
+     */
+    @PostMapping("/user/{userId}")
     public ResponseEntity<LoanResourceResponse> requestLoan(
             @PathVariable UUID userId,
-            @RequestBody LoanResourceRequest request
-    ) {
-        LoanResourceCommand command = LoanMapper.loanToCommand(request, new UserId(userId));
-        return ResponseEntity.ok(requestLoanUseCase.execute(command));
+            @RequestBody LoanResourceRequest request) {
+        var command = LoanMapper.loanToCommand(request, new UserId(userId));
+        LoanResourceResponse response = requestLoanUseCase.execute(command);
+        HttpStatus status = response.success() ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
     }
 
-
+    /**
+     * PUT /api/loans/{loanId}/return
+     * Devuelve un préstamo activo y libera la copia.
+     */
     @PutMapping("/{loanId}/return")
-    public ResponseEntity<ReturnLoanResponse> returnLoan(
-            @PathVariable UUID loanId
-    ) {
-        return ResponseEntity.ok(returnLoanUseCase.execute(loanId));
+    public ResponseEntity<ReturnLoanResponse> returnLoan(@PathVariable UUID loanId) {
+        ReturnLoanResponse response = returnLoanUseCase.execute(loanId);
+        HttpStatus status = response.success() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(response);
     }
 }
