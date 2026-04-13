@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGEBI Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="side">
+  <div class="brand">
+    <div class="brand-name">SIGEBI</div>
+    <div class="brand-tag">Panel Administrativo</div>
+  </div>
+  <nav class="side-nav">
+    <div class="sn-label">Visión general</div>
+    <button class="sn-item on" onclick="sp('dashboard',this)"><span class="sn-ic">◈</span>Dashboard</button>
+
+    <div class="sn-label">Inventario</div>
+    <button class="sn-item" onclick="sp('recursos',this)"><span class="sn-ic">◻</span>Recursos</button>
+    <button class="sn-item" onclick="sp('nuevo-recurso',this)"><span class="sn-ic">＋</span>Agregar recurso</button>
+
+    <div class="sn-label">Circulación</div>
+    <button class="sn-item" onclick="sp('todos-prestamos',this)">
+      <span class="sn-ic">▤</span>Todos los préstamos<span class="sn-badge">3</span>
+    </button>
+    <button class="sn-item" onclick="sp('penalizaciones',this)">
+      <span class="sn-ic">!</span>Penalizaciones<span class="sn-badge">2</span>
+    </button>
+
+    <div class="sn-label">Usuarios</div>
+    <button class="sn-item" onclick="sp('usuarios',this)"><span class="sn-ic">◎</span>Usuarios</button>
+    <button class="sn-item" onclick="sp('roles',this)"><span class="sn-ic">◑</span>Roles y permisos</button>
+  </nav>
+  <div class="side-footer">
+    <div class="admin-chip">
+      <div class="admin-ava">FA</div>
+      <div>
+        <div class="admin-name">Francis Admin</div>
+        <div class="admin-role">Administrador</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <span class="tb-title" id="tb-title">Dashboard</span>
+    <span class="tb-sep"></span>
+    <span class="tb-status"><span class="tb-dot"></span>API conectada</span>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="pg on" id="pg-dashboard">
+      <div class="ph">
+        <div class="ph-title">Dashboard</div>
+        <div class="ph-sub">Vista general del sistema en tiempo real</div>
+      </div>
+      <div class="stats">
+        <div class="sc hl"><div class="sc-l">Recursos</div><div class="sc-v">1,284</div><div class="sc-n">en catálogo</div></div>
+        <div class="sc"><div class="sc-l">Préstamos activos</div><div class="sc-v">312</div><div class="sc-n">en circulación</div></div>
+        <div class="sc"><div class="sc-l">Vencidos</div><div class="sc-v">18</div><div class="sc-n">sin devolver</div></div>
+        <div class="sc"><div class="sc-l">Penalizaciones</div><div class="sc-v">7</div><div class="sc-n">activas hoy</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+        <div class="card">
+          <div class="ch"><div class="ct">Préstamos vencidos recientes</div><span class="b bov">Requieren acción</span></div>
+          <div class="cp">
+            <div class="pc" style="margin-bottom:.5rem">
+              <div class="pc-info">
+                <div class="pc-title">Clean Code → Ruben Ureña</div>
+                <div class="pc-meta">Venció: 2025-03-22 · 20 días de retraso</div>
+              </div>
+              <button class="btn bd btn-sm" onclick="openPen('Ruben Ureña','l001')">Penalizar</button>
+            </div>
+            <div class="pc" style="border-left-color:var(--amber);margin-bottom:0">
+              <div class="pc-info">
+                <div class="pc-title">GoF Patterns → Ana Pérez</div>
+                <div class="pc-meta">Venció: 2025-04-01 · 10 días de retraso</div>
+              </div>
+              <button class="btn bd btn-sm" onclick="openPen('Ana Pérez','l003')">Penalizar</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Actividad reciente</div><div style="font-size:.72rem;color:var(--muted)">Últimas 24h</div></div>
+          <div class="cp">
+            <div style="display:flex;flex-direction:column;gap:.625rem">
+              <div style="display:flex;align-items:center;gap:.75rem;font-size:.82rem"><span style="color:var(--green)">＋</span><span style="color:var(--mid)">Préstamo creado</span><span style="color:var(--muted);margin-left:auto;font-size:.72rem">hace 2h</span></div>
+              <div style="display:flex;align-items:center;gap:.75rem;font-size:.82rem"><span style="color:var(--blue)">↵</span><span style="color:var(--mid)">Devolución registrada</span><span style="color:var(--muted);margin-left:auto;font-size:.72rem">hace 3h</span></div>
+              <div style="display:flex;align-items:center;gap:.75rem;font-size:.82rem"><span style="color:var(--amber)">!</span><span style="color:var(--mid)">Penalización aplicada</span><span style="color:var(--muted);margin-left:auto;font-size:.72rem">hace 5h</span></div>
+              <div style="display:flex;align-items:center;gap:.75rem;font-size:.82rem"><span style="color:var(--green)">◻</span><span style="color:var(--mid)">Recurso agregado (3 copias)</span><span style="color:var(--muted);margin-left:auto;font-size:.72rem">hace 6h</span></div>
+              <div style="display:flex;align-items:center;gap:.75rem;font-size:.82rem"><span style="color:var(--mid)">◎</span><span style="color:var(--mid)">Rol asignado a usuario</span><span style="color:var(--muted);margin-left:auto;font-size:.72rem">hace 8h</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECURSOS -->
+    <div class="pg" id="pg-recursos">
+      <div class="ph"><div class="ph-title">Inventario de recursos</div><div class="ph-sub">Gestión completa del catálogo bibliográfico</div></div>
+      <div class="card">
+        <div class="ch"><div class="ct">Todos los recursos</div><button class="btn bp btn-sm" onclick="sp('nuevo-recurso')">+ Agregar recurso</button></div>
+        <div class="cp">
+          <div class="sbar">
+            <input class="si" type="text" placeholder="Buscar…" id="q-res" oninput="filterAdminRes()">
+            <select class="si" id="q-res-type" onchange="filterAdminRes()" style="max-width:150px">
+              <option value="">Todos</option>
+              <option value="BOOK">Libro</option>
+              <option value="JOURNAL">Revista</option>
+            </select>
+          </div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr><th>Recurso</th><th>Tipo</th><th>ISBN</th><th>Copias total</th><th>Disponibles</th><th>Estado</th><th></th></tr>
+              </thead>
+              <tbody id="admin-res-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NUEVO RECURSO -->
+    <div class="pg" id="pg-nuevo-recurso">
+      <div class="ph"><div class="ph-title">Agregar recurso</div><div class="ph-sub">Registra un nuevo recurso y sus copias físicas</div></div>
+      <div class="card">
+        <div class="ch"><div class="ct">Datos bibliográficos</div></div>
+        <div class="cp">
+          <div class="fg">
+            <div class="fi"><label>Título</label><input type="text" id="nr-title" placeholder="Título del recurso"></div>
+            <div class="fi"><label>Subtítulo (opcional)</label><input type="text" id="nr-sub" placeholder="Subtítulo"></div>
+            <div class="fi"><label>Tipo de recurso</label>
+              <select id="nr-type">
+                <option value="BOOK">Libro</option>
+                <option value="JOURNAL">Revista</option>
+                <option value="THESIS">Tesis</option>
+              </select>
+            </div>
+            <div class="fi"><label>Idioma</label>
+              <select id="nr-lang">
+                <option value="SPANISH">Español</option>
+                <option value="ENGLISH">Inglés</option>
+              </select>
+            </div>
+            <div class="fi"><label>ISBN</label><input type="text" id="nr-isbn" placeholder="978-x-xxx-xxxxx-x"></div>
+            <div class="fi"><label>Cantidad de copias</label><input type="number" id="nr-qty" value="1" min="1" max="50"></div>
+            <div class="fi full"><label>Autores (separados por coma)</label><input type="text" id="nr-authors" placeholder="Autor 1, Autor 2…"></div>
+          </div>
+          <div class="fa">
+            <button class="btn bs" onclick="sp('recursos')">Cancelar</button>
+            <button class="btn bp" onclick="addResource()">Crear recurso y copias</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODOS LOS PRÉSTAMOS -->
+    <div class="pg" id="pg-todos-prestamos">
+      <div class="ph"><div class="ph-title">Todos los préstamos</div><div class="ph-sub">Gestión global de circulación</div></div>
+      <div class="card">
+        <div class="ch">
+          <div class="ct">Préstamos del sistema</div>
+          <div style="display:flex;gap:.5rem">
+            <span class="b bov" id="lbl-overdue">Vencidos: 3</span>
+            <span class="b bok">Activos: 15</span>
+          </div>
+        </div>
+        <div class="cp">
+          <div class="sbar">
+            <input class="si" type="text" placeholder="Buscar usuario o recurso…" id="q-loans" oninput="filterLoans()">
+            <select class="si" id="q-loan-state" onchange="filterLoans()" style="max-width:150px">
+              <option value="">Todos</option>
+              <option value="OVERDUE">Vencidos</option>
+              <option value="ON_TIME">Al día</option>
+            </select>
+          </div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr><th>Usuario</th><th>Recurso / Copia</th><th>Inicio</th><th>Vencimiento</th><th>Estado</th><th></th></tr>
+              </thead>
+              <tbody id="all-loans-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENALIZACIONES -->
+    <div class="pg" id="pg-penalizaciones">
+      <div class="ph"><div class="ph-title">Penalizaciones</div><div class="ph-sub">Aplicar y gestionar penalizaciones de usuarios</div></div>
+      <div class="card">
+        <div class="ch"><div class="ct">Penalizaciones activas</div><button class="btn bp btn-sm" onclick="openPen()">+ Aplicar manual</button></div>
+        <div class="cp" id="pen-admin-list"></div>
+      </div>
+    </div>
+
+    <!-- USUARIOS -->
+    <div class="pg" id="pg-usuarios">
+      <div class="ph"><div class="ph-title">Usuarios</div><div class="ph-sub">Gestión de cuentas y estados</div></div>
+      <div class="card">
+        <div class="ch"><div class="ct">Directorio de usuarios</div></div>
+        <div class="cp">
+          <div class="sbar"><input class="si" type="text" placeholder="Buscar usuario…" oninput="filterUsers(event)"></div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr><th>Usuario</th><th>Email</th><th>Estado</th><th>Roles</th><th>Préstamos</th><th></th></tr>
+              </thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROLES -->
+    <div class="pg" id="pg-roles">
+      <div class="ph"><div class="ph-title">Roles y permisos</div><div class="ph-sub">Asignación de permisos por rol</div></div>
+      <div class="card">
+        <div class="ch"><div class="ct">Roles del sistema</div></div>
+        <div class="cp" id="roles-list"></div>
+      </div>
+      <div class="card" style="margin-top:1.25rem">
+        <div class="ch"><div class="ct">Asignar rol a usuario</div></div>
+        <div class="cp">
+          <div class="fg">
+            <div class="fi"><label>Usuario objetivo</label>
+              <select id="role-user-id">
+                <option value="">Selecciona usuario…</option>
+                <option value="u001">Ruben Ureña</option>
+                <option value="u002">Ana Pérez</option>
+                <option value="u003">Carlos Mena</option>
+              </select>
+            </div>
+            <div class="fi"><label>Rol a asignar</label>
+              <select id="role-id">
+                <option value="r001">LIBRARIAN</option>
+                <option value="r002">STUDENT</option>
+                <option value="r003">ADMIN</option>
+              </select>
+            </div>
+          </div>
+          <div class="fa"><button class="btn bp" onclick="assignRole()">Asignar rol</button></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: PENALIZAR -->
+<div class="mo" id="pen-modal">
+  <div class="mb">
+    <div class="mt">Aplicar penalización</div>
+    <div class="ms" id="pen-modal-body">Aplica una penalización manual a un usuario con préstamo vencido.</div>
+    <div style="margin-top:1rem">
+      <div class="fi" style="margin-bottom:.75rem">
+        <label>Usuario a penalizar</label>
+        <input type="text" id="pen-user" placeholder="ID o nombre del usuario">
+      </div>
+      <div class="fi">
+        <label>ID del administrador</label>
+        <input type="text" id="pen-admin" value="admin-001">
+      </div>
+    </div>
+    <div class="ma">
+      <button class="btn bs" onclick="closeMo('pen-modal')">Cancelar</button>
+      <button class="btn bd" onclick="doPenalty()">Aplicar penalización</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: REMOVER PENALIZACIÓN -->
+<div class="mo" id="rm-pen-modal">
+  <div class="mb">
+    <div class="mt">Remover penalización</div>
+    <div class="ms">¿Confirmas que deseas remover esta penalización? El usuario quedará habilitado para solicitar préstamos.</div>
+    <div class="ma">
+      <button class="btn bs" onclick="closeMo('rm-pen-modal')">Cancelar</button>
+      <button class="btn bg" onclick="doRemovePen()">Confirmar remoción</button>
+    </div>
+  </div>
+</div>
+
+<div class="ta" id="ta"></div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>
