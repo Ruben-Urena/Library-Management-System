@@ -103,20 +103,8 @@ public abstract class BibliographyResource extends ActivatableAggregate {
 //        addDomainEvent(new ResourceUpdated(getId(), userId, Instant.now()));
     }
 
-    public void setCreditsData(Set<FullName> contributors, Set<String> publisher) {
-//        Objects.requireNonNull(creditsData,"Credits data cannot be null");
-        if (this.creditsData.publisher() != null){
-            throw new BusinessRuleViolationException("publisher data is already set");
-        }
-        if (this.creditsData.contributors() != null){
-            throw new BusinessRuleViolationException("contributors data is already set");
-        }
-        this.creditsData = new CreditsData(
-                this.creditsData.authorsIds(),
-                contributors,
-                publisher
-        );
-//        addDomainEvent(new ResourceUpdated(getId(), userId, Instant.now()));
+    public void setCreditsData(CreditsData creditsData) {
+        this.creditsData = creditsData;
     }
 
     public Language getLanguage() {

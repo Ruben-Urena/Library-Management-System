@@ -1,5 +1,6 @@
 package com.ruben.sigebi.infrastructure.persistence.repository.penalty;
 
+import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.infrastructure.persistence.entity.penalty.PenaltyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,6 +20,8 @@ public interface SpringDataPenaltyRepository extends JpaRepository<PenaltyEntity
             UUID userId,
             Status status
     );
+
+    List<PenaltyEntity> findByStatusAndUserId(Status status, UUID userId);
 
 
     List<PenaltyEntity> findByUserId(UUID userId);

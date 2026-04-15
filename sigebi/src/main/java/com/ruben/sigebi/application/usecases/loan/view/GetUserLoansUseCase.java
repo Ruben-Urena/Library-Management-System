@@ -4,6 +4,7 @@ import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.bibliographyResource.entity.Book;
 import com.ruben.sigebi.domain.bibliographyResource.repository.BibliographyRepository;
 import com.ruben.sigebi.domain.bibliographyResource.repository.ResourceCopyRepository;
+import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.domain.loan.entity.Loan;
 import com.ruben.sigebi.domain.loan.repository.LoanRepository;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,10 @@ public class GetUserLoansUseCase {
         this.bibliographyRepository = bibliographyRepository;
     }
 
-    public List<GetUserLoansResponse> execute(UUID userId) {
+    public List<GetUserLoansResponse> execute(UUID userId, Status status) {
+
         return loanRepository
-                .findByUser(new UserId(userId))
+                .findByStatusAndUserId(status, new UserId(userId))
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -36,6 +38,7 @@ public class GetUserLoansUseCase {
     private GetUserLoansResponse toResponse(Loan loan) {
 
         var copy = resourceCopyRepository.findById(loan.getCopyId());
+
 
         String title = "Unknown";
         String isbn = null;

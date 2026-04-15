@@ -23,4 +23,5 @@ public interface PenaltyRepository {
     Optional<List<Penalty>> findPenaltyByUserId(UserId userId);
     List<Penalty> findAllActiveAndDueDatePenalty();
     Optional<List<Penalty>> findPenaltyByCopyId(ResourceCopyId copyId);
+    List<Penalty> findByStatusAndUserId(Status status, UserId userId);
 }

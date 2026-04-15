@@ -1,10 +1,8 @@
 package com.ruben.sigebi.domain.User.entity;
 import com.ruben.sigebi.domain.User.enums.UserStates;
-import com.ruben.sigebi.domain.User.valueObject.EmailAddress;
-import com.ruben.sigebi.domain.User.valueObject.Password;
+import com.ruben.sigebi.domain.User.valueObject.*;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.PenaltyId;
 import com.ruben.sigebi.domain.roles.valueObjects.RoleID;
-import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.common.exception.InvalidationException;
 import com.ruben.sigebi.domain.common.objectValue.ActivatableAggregate;
 import com.ruben.sigebi.domain.common.objectValue.FullName;
@@ -21,10 +19,10 @@ public class User extends ActivatableAggregate {
 
     private final Set<RoleID> rolesId;
 
-
     private final UserId userId;
 
     private UserStates userStates;
+
 
 
     public User(UserId userId, FullName fullName, EmailAddress email, Password password, HashSet<RoleID> roleId, UserStates userStates) {
@@ -35,6 +33,7 @@ public class User extends ActivatableAggregate {
         this.password = Objects.requireNonNull(password);
         this.rolesId = new HashSet<>(Objects.requireNonNull(roleId));
         this.userStates = Objects.requireNonNull(userStates);
+
     }
 
 
@@ -121,6 +120,7 @@ public class User extends ActivatableAggregate {
     public UserStates getUserState() {
         return userStates;
     }
+
 
     @Override
     public boolean equals(Object o) {

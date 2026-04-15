@@ -1,9 +1,9 @@
 package com.ruben.sigebi.application.service;
 
-import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
 import com.ruben.sigebi.domain.bibliographyResource.entity.ResourceCopy;
 import com.ruben.sigebi.domain.bibliographyResource.repository.ResourceCopyRepository;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceCopyId;
+import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.domain.common.exception.BusinessRuleViolationException;
 import com.ruben.sigebi.domain.common.exception.ElementNotFoundInTheDatabaseException;
 import com.ruben.sigebi.domain.common.exception.InvalidStateException;
@@ -16,35 +16,36 @@ import com.ruben.sigebi.domain.roles.repository.RoleRepository;
 import com.ruben.sigebi.domain.User.repository.UserRepository;
 import com.ruben.sigebi.domain.roles.valueObjects.Permission;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
-import com.ruben.sigebi.domain.bibliographyResource.repository.BibliographyRepository;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.domain.penalty.repository.PenaltyRepository;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.Objects;
-
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
 public class LoanService {
 
-    private static final int DAYS_OF_LOAN = 7;
+    private static  int DAYS_OF_LOAN = 7;
+    private static int LIMIT_OF_LOAN_PER_USER = 4;
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final BibliographyRepository bibliographyRepository;
     private final PenaltyRepository penaltyRepository;
     private final LoanRepository loanRepository;
     private final ResourceCopyRepository resourceCopyRepository;
 
+
     public LoanService(UserRepository userRepository, RoleRepository roleRepository,
-                       BibliographyRepository bibliographyRepository,
                        PenaltyRepository penaltyRepository, LoanRepository loanRepository,
                        ResourceCopyRepository resourceCopyRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.bibliographyRepository = bibliographyRepository;
         this.penaltyRepository = penaltyRepository;
         this.loanRepository = loanRepository;
         this.resourceCopyRepository = resourceCopyRepository;
@@ -55,14 +56,6 @@ public class LoanService {
         Objects.requireNonNull(resourceID);
         Objects.requireNonNull(userId);
 
-
-        BibliographyResource resource = bibliographyRepository.findById(resourceID)
-                .orElseThrow(() -> new ElementNotFoundInTheDatabaseException(
-                        "Resource not found: " + resourceID));
-
-        if (!resource.isActive()) {
-            throw new InvalidStateException("Resource is not active: " + resourceID);
-        }
 
 
         User user = userRepository.findById(userId)
@@ -81,13 +74,20 @@ public class LoanService {
         }
 
 
+        if (loanRepository.findByStatusAndUserId(Status.ACTIVE, userId).size() >= LIMIT_OF_LOAN_PER_USER){
+            throw new BusinessRuleViolationException("User: "+ userId+" cannot loan more than : " + LIMIT_OF_LOAN_PER_USER+" resources");
+        }
+        if (alreadyHasResource(userId, resourceID)){
+            throw new BusinessRuleViolationException("User: "+ userId+" cannot loan the same resource: " +resourceID+" resources ");
+        }
+
         ResourceCopy copy = resourceCopyRepository.findFirstAvailable(resourceID)
                 .orElseThrow(() -> new BusinessRuleViolationException(
                         "No available copies for resource: " + resourceID));
 
-
+        System.out.println("COPY REFERENCE TO:"+copy.getPhysicalResourceId().value());
         copy.markAsLoaned();
-        resourceCopyRepository.save(copy);
+        resourceCopyRepository.save(copy);////error here
 
 
         Instant dueDate = Instant.now().plus(DAYS_OF_LOAN, ChronoUnit.DAYS);
@@ -125,6 +125,15 @@ public class LoanService {
         return false;
     }
 
+    public boolean alreadyHasResource(UserId userId, ResourceID resourceId) {
+        return loanRepository.findByStatusAndUserId(Status.ACTIVE, userId)
+                .stream()
+                .map(Loan::getCopyId)
+                .map(resourceCopyRepository::findById)
+                .flatMap(Optional::stream)
+                .anyMatch(rc -> rc.getPhysicalResourceId().equals(resourceId));
+    }
+
     public boolean userHasPermissionToLoan(User user) {
         for (var roleId : user.getRoles()) {
             Role role = roleRepository.findById(roleId)
@@ -133,7 +142,46 @@ public class LoanService {
         }
         return false;
     }
+    public boolean userHasPermissionToChangeDaysLoan(User user) {
+        for (var roleId : user.getRoles()) {
+            Role role = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new ElementNotFoundInTheDatabaseException("Role not found."));
+            if (role.hasPermission(new Permission("LOAN_DAYS", "CHANGE"))) return true;
+        }
+        return false;
+    }
+    public boolean userHasPermissionToChangeLimitOfLoanPerUser(User user) {
+        for (var roleId : user.getRoles()) {
+            Role role = roleRepository.findById(roleId)
+                    .orElseThrow(() -> new ElementNotFoundInTheDatabaseException("Role not found."));
+            if (role.hasPermission(new Permission("LOAN", "MAX"))) return true;
+        }
+        return false;
+    }
 
+    public void setDaysOfLoan (int daysOfLoan, User user) {
+        if(userHasPermissionToChangeDaysLoan(user)){
+            DAYS_OF_LOAN = daysOfLoan;
+        }else {
+            throw new BusinessRuleViolationException("User does not have permission to set days of loan: " + user.getUserId());
+        }
+    }
+
+    public void setLimitOfLoanPerUser(int limitOfLoanPerUser, User user) {
+        if (userHasPermissionToChangeLimitOfLoanPerUser(user)){
+            LIMIT_OF_LOAN_PER_USER = limitOfLoanPerUser;
+        }else {
+            throw new BusinessRuleViolationException("User does not have permission to set max of loan per user: " + user.getUserId());
+        }
+    }
+
+    public static int getDaysOfLoan() {
+        return DAYS_OF_LOAN;
+    }
+
+    public static int getLimitOfLoanPerUser() {
+        return LIMIT_OF_LOAN_PER_USER;
+    }
 
     public record LoanResult(ResourceCopyId copyId, Instant dueDate) {}
 

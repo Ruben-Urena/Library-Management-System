@@ -21,6 +21,7 @@ import com.ruben.sigebi.infrastructure.persistence.repository.userRepo.SpringDat
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -97,6 +98,18 @@ public class JpaPenaltyRepository implements PenaltyRepository {
                 .toList();
         return penalties.isEmpty() ? Optional.empty() : Optional.of(penalties);
     }
+
+    @Override
+    public List<Penalty> findByStatusAndUserId(Status status, UserId userId) {
+        List<Penalty> penalties = springDataPenaltyRepository
+                .findByStatusAndUserId(status,userId.value())
+                .stream()
+                .map(PenaltyMapper::toDomain)
+                .toList();
+        return penalties.isEmpty() ? Collections.emptyList() : penalties;
+    }
+
+
 }
 
 

@@ -20,4 +20,5 @@ public interface UserRepository {
     Set<User> findAll();
     public Optional<User> findByEmail(EmailAddress email);
     public boolean existsByEmail(EmailAddress email);
+
 }

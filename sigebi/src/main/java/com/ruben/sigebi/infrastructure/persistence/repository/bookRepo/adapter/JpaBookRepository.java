@@ -2,7 +2,6 @@ package com.ruben.sigebi.infrastructure.persistence.repository.bookRepo.adapter;
 
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
 import com.ruben.sigebi.domain.bibliographyResource.entity.Book;
-import com.ruben.sigebi.domain.bibliographyResource.enums.ResourceState;
 import com.ruben.sigebi.domain.bibliographyResource.repository.BibliographyRepository;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.AuthorId;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
@@ -11,7 +10,7 @@ import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.infrastructure.persistence.entity.author.AuthorEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource.BookEntity;
 import com.ruben.sigebi.infrastructure.persistence.mapper.BookMapper;
-import com.ruben.sigebi.infrastructure.persistence.repository.bookRepo.SpringDataResourceRepository;
+import com.ruben.sigebi.infrastructure.persistence.repository.bookRepo.SpringDataBookRepository;
 import com.ruben.sigebi.infrastructure.persistence.repository.authorRepo.SpringDataAuthorRepository;
 import org.springframework.stereotype.Repository;
 
@@ -21,12 +20,12 @@ import java.util.stream.Collectors;
 @Repository
 public class JpaBookRepository implements BibliographyRepository {
 
-    private final SpringDataResourceRepository repository;
+    private final SpringDataBookRepository repository;
     private final SpringDataAuthorRepository  authorRepository;
     private final BookMapper bookMapper;
 
 
-    public JpaBookRepository(SpringDataResourceRepository repository, SpringDataAuthorRepository authorRepository1, BookMapper mapper) {
+    public JpaBookRepository(SpringDataBookRepository repository, SpringDataAuthorRepository authorRepository1, BookMapper mapper) {
         this.repository = repository;
         this.authorRepository = authorRepository1;
 
@@ -56,7 +55,7 @@ public class JpaBookRepository implements BibliographyRepository {
     @Override
     public Optional<BibliographyResource> findById(ResourceID id) {
         return repository.findById(id.value())
-                .map(entity -> bookMapper.toDomain((BookEntity) entity));
+                .map(bookMapper::toDomain);
     }
 
     @Override

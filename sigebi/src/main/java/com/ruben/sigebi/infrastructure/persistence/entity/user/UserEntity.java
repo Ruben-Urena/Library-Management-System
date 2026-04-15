@@ -2,6 +2,8 @@ package com.ruben.sigebi.infrastructure.persistence.entity.user;
 
 import com.ruben.sigebi.domain.User.enums.UserStates;
 import com.ruben.sigebi.domain.common.enums.Status;
+import com.ruben.sigebi.infrastructure.persistence.entity.reservationCodes.ReservationCodeEntity;
+import com.ruben.sigebi.infrastructure.persistence.entity.returnCodes.ReturnCodesEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.role.RoleEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.embed.EmailEmbeddable;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.embed.FullNameEmbeddable;
@@ -16,6 +18,9 @@ import java.util.UUID;
 public class UserEntity {
     @Id
     private UUID id;
+
+
+
 
     @Embedded
     private FullNameEmbeddable fullName;
@@ -42,6 +47,7 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+
     private Set<RoleEntity> roles = new HashSet<>();
 
     public Status getStatus() {
@@ -99,4 +105,6 @@ public class UserEntity {
     public void setRoles(Set<RoleEntity> roles) {
         this.roles = roles;
     }
+
+
 }
