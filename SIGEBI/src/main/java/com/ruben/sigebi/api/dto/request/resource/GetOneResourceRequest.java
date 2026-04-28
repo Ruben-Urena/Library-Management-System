@@ -6,6 +6,6 @@ import java.util.Set;
 public record GetOneResourceRequest(
         String title,
         @JsonProperty("author")
-        Set<AddAuthorRequest> author
+        Set<GetAuthorRequest> author
 ){
 }

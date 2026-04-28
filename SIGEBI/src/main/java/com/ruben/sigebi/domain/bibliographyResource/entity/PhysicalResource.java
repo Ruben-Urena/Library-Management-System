@@ -10,6 +10,7 @@ public abstract class PhysicalResource extends BibliographyResource{
 
     private PhysicalData physicalData;
 
+
     public PhysicalResource(ResourceMainData mainData, Language language, String resourceType, Set<AuthorId> authorId, ResourceID resourceID, PhysicalData physicalData) {
         super(mainData, language, resourceType, authorId, resourceID);
         this.physicalData = physicalData;

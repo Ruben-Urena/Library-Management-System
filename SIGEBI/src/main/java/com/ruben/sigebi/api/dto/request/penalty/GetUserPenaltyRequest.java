@@ -1,9 +1,11 @@
 package com.ruben.sigebi.api.dto.request.penalty;
 
-import java.util.UUID;
+import com.ruben.sigebi.domain.common.enums.Status;
+
+
 
 public record GetUserPenaltyRequest(
-        UUID uuid
+        Status status
 ){
 
 }

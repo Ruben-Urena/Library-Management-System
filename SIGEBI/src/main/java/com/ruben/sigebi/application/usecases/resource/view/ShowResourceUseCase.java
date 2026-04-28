@@ -85,12 +85,12 @@ public class ShowResourceUseCase {
                 )
                 .toList();
 
-        String physicalResourceState = null;
+
         String physicalResourceFormat = null;
         String physicalResourceShelfLocation= null;
 
         if (bibliographyResource instanceof PhysicalResource a) {
-            physicalResourceState = a.getState().name();
+
             physicalResourceFormat = a.getPhysicalData().physicalFormat();
             physicalResourceShelfLocation  = a.getPhysicalData().shelfLocation();
         }
@@ -109,7 +109,6 @@ public class ShowResourceUseCase {
                 bibliographyResource.getEdition(),
                 bibliographyResource.getPublicationData().date().toString(),
                 bibliographyResource.getStatus().name(),
-                physicalResourceState,
                 physicalResourceFormat,
                 physicalResourceShelfLocation,
                 isbn,

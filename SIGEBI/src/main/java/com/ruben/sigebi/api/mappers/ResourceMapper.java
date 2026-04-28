@@ -1,13 +1,8 @@
 package com.ruben.sigebi.api.mappers;
-import com.ruben.sigebi.api.dto.request.resource.AddAuthorRequest;
-import com.ruben.sigebi.api.dto.request.resource.GetOneResourceRequest;
+import com.ruben.sigebi.api.dto.request.resource.*;
 import com.ruben.sigebi.api.dto.response.resource.GetAllResourceResponse;
 import com.ruben.sigebi.application.commands.resource.*;
-import com.ruben.sigebi.api.dto.request.resource.AddResourceRequest;
-import com.ruben.sigebi.api.dto.request.loan.LoanResourceRequest;
-import com.ruben.sigebi.api.dto.request.resource.StateChangeResourceRequest;
 import com.ruben.sigebi.api.dto.response.resource.AddResourceResponse;
-import com.ruben.sigebi.api.dto.response.resource.LoanResourceResponse;
 import com.ruben.sigebi.api.dto.response.resource.StateChangeResourceResponse;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
 import com.ruben.sigebi.domain.bibliographyResource.entity.BibliographyResource;
@@ -15,10 +10,8 @@ import com.ruben.sigebi.domain.bibliographyResource.entity.Book;
 import com.ruben.sigebi.domain.bibliographyResource.entity.PhysicalResource;
 import com.ruben.sigebi.domain.bibliographyResource.enums.ResourceState;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.Language;
-import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceID;
 import com.ruben.sigebi.domain.bibliographyResource.valueObject.ResourceMainData;
 import com.ruben.sigebi.domain.common.objectValue.FullName;
-import com.ruben.sigebi.domain.loan.entity.Loan;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,24 +28,30 @@ public class ResourceMapper {
                 new Language(request.language()),
                 request.resourceType(),
                 request.authors().stream()
-                        .map(ResourceMapper::authorToCommand)
+                        .map(ResourceMapper::AddauthorToCommand)
                         .collect(Collectors.toSet()),
                 request.isbn(),
                 request.quantity()
         );
     }
 
-    public static AddAuthorCommand authorToCommand(AddAuthorRequest request) {
+    public static AddAuthorCommand AddauthorToCommand(AddAuthorRequest request) {
         return new AddAuthorCommand(
                 new FullName(request.firstName(), request.lastName())
         );
+    }
+    public static GetAuthorCommand getAuthorToCommand(GetAuthorRequest request){
+        return new GetAuthorCommand(
+                new FullName(request.firstName(),request.lastName())
+        );
+
     }
 
     public static GetOneResourceCommand getOneResourceToCommand(GetOneResourceRequest request) {
         return new GetOneResourceCommand(
                 new ResourceMainData(request.title(), null),
                 request.author().stream()
-                        .map(ResourceMapper::authorToCommand)
+                        .map(ResourceMapper::getAuthorToCommand)
                         .collect(Collectors.toSet())
         );
     }
@@ -85,8 +84,10 @@ public class ResourceMapper {
         String format = null;
         String shelfLocation = null;
         String isbn = null;
+        String status = null;
 
         if (resource instanceof PhysicalResource p && p.getPhysicalData() != null) {
+
             format = p.getPhysicalData().physicalFormat();
             shelfLocation = p.getPhysicalData().shelfLocation();
         }
@@ -112,7 +113,6 @@ public class ResourceMapper {
                 resource.getEdition(),
                 publicationDate,
                 resource.getStatus().name(),
-                state,
                 format,
                 shelfLocation,
                 isbn,

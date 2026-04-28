@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/resources")
 public class ResourceController {
@@ -41,6 +42,15 @@ public class ResourceController {
     /**
      * GET /api/resources/{id}
      * Devuelve un recurso por título y autores.
+     * {
+     *   "title": "Clean Code",
+     *   "author": [
+     *     {
+     *       "firstName": "Robert",
+     *       "lastName": "Martin"
+     *     }
+     *   ]
+     * }
      */
     @PostMapping("/search")
     public ResponseEntity<GetOneResourceResponse> getOneResource(

@@ -21,11 +21,10 @@ public class GetUserPenaltiesUseCase {
         this.penaltyRepository = penaltyRepository;
     }
 
-    public List<GetUserPenaltiesResponse> execute(UUID userId) {
+    public List<GetUserPenaltiesResponse> execute(UUID userId, GetUserPenaltyRequest request) {
 
         List<Penalty> penalties = penaltyRepository
-                .findPenaltyByUserId(new UserId(userId))
-                .orElse(Collections.emptyList());
+                .findByStatusAndUserId(request.status(),new UserId(userId));
 
 
         if (penalties.isEmpty()) {

@@ -1,11 +1,11 @@
 package com.ruben.sigebi.infrastructure.persistence.mapper;
 
 import com.ruben.sigebi.domain.User.entity.User;
-import com.ruben.sigebi.domain.User.valueObject.EmailAddress;
-import com.ruben.sigebi.domain.User.valueObject.Password;
-import com.ruben.sigebi.domain.User.valueObject.UserId;
+import com.ruben.sigebi.domain.User.valueObject.*;
 import com.ruben.sigebi.domain.common.objectValue.FullName;
 import com.ruben.sigebi.domain.roles.valueObjects.RoleID;
+import com.ruben.sigebi.infrastructure.persistence.entity.reservationCodes.ReservationCodeEntity;
+import com.ruben.sigebi.infrastructure.persistence.entity.returnCodes.ReturnCodesEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.role.RoleEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.UserEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.embed.EmailEmbeddable;
@@ -75,6 +75,7 @@ public class UserMapper {
                 entity.getUserState()
         );
         a.setStatus(entity.getStatus());
+
         return a;
     }
 }

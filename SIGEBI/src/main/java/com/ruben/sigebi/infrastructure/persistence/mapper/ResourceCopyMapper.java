@@ -19,11 +19,13 @@ public class ResourceCopyMapper {
 
 
     public static ResourceCopy toDomain(ResourceCopyEntity entity){
-        return new ResourceCopy(
+       var a = new ResourceCopy(
                 new ResourceCopyId(entity.getId()),
                 entity.getState(),
-                new ResourceID(entity.getId()),
+                new ResourceID(entity.getPhysicalResource().getId()),
                 entity.getAcquisitionDate()
                 );
+       a.setStatus(entity.getStatus());
+       return a;
     }
 }

@@ -141,6 +141,8 @@ public class BookMapper {
     }
 
     public Book toDomain(BookEntity entity) {
+        System.out.println(entity.getAuthors()+" AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
         Set<AuthorId> authors = entity.getAuthors()
                 .stream()
                 .map(a -> new AuthorId(UUID.fromString(a.getId().toString())))
@@ -183,7 +185,7 @@ public class BookMapper {
                 }
             }
         }else {
-            contributorsSTR = null;
+            contributorsSTR = new HashSet<>();
         }
 
         if ( publishers != null &&  !(publishers.isEmpty())) {
@@ -193,9 +195,10 @@ public class BookMapper {
                 }
             }
         }else {
-            publisherSTR = null;
+            publisherSTR = new  HashSet<>();
         }
-        book.setCreditsData(contributorsSTR,publisherSTR);
+        book.setCreditsData(new CreditsData(authors,contributorsSTR,publisherSTR));
+
 
 
         //publication date

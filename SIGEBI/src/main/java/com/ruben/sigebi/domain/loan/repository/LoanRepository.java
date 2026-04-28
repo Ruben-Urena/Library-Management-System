@@ -25,5 +25,7 @@ public interface LoanRepository{
     Set<Loan> findAllActiveLoans();
     List<Loan> findLoansByStateAndStatus(PendingState pendingState, Status status);
     Set<Loan> findByStatusAndUserId(Status status, UserId userId);
+    boolean existByReservationCode();
+    boolean existByReturnCodes();
 
 }

@@ -16,6 +16,8 @@ public class ResourceCopy extends ActivatableAggregate implements Loanable, Rese
     private ResourceState state;
     private final ResourceID physicalResourceId;
     private final Instant acquisitionDate;
+    private String reserveCode;
+
 
     public ResourceCopy(ResourceCopyId id, ResourceState state, ResourceID physicalResourceId, Instant acquisitionDate) {
         this.id = Objects.requireNonNull(id," ResourceCopyId cannot be null");
@@ -49,6 +51,12 @@ public class ResourceCopy extends ActivatableAggregate implements Loanable, Rese
             state = ResourceState.AVAILABLE;
         }
     }
+//CODIGO DE RESERVA; RE-RU852479
+    //CLASE VALUE OBJECT RESERVCODE= CODIGO+ResourceCopy
+    //RESERVCODE: IF
+    //IF RE-RU852479 MACH THEN MARK AS LOANED
+    //
+
 
     @Override
     public void markAsReserved(){

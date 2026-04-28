@@ -4,10 +4,13 @@ import com.ruben.sigebi.domain.common.enums.Status;
 import com.ruben.sigebi.domain.loan.enums.PendingState;
 import com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource.BibliographyResourceEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.bibliographyResource.ResourceCopyEntity;
+import com.ruben.sigebi.infrastructure.persistence.entity.reservationCodes.ReservationCodeEntity;
+import com.ruben.sigebi.infrastructure.persistence.entity.returnCodes.ReturnCodesEntity;
 import com.ruben.sigebi.infrastructure.persistence.entity.user.UserEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -15,6 +18,21 @@ import java.util.UUID;
 public class LoanEntity {
     @Id
     private UUID id;
+    @ManyToMany
+    @JoinTable(
+            name = "loans_ReturnCodes",
+            joinColumns = @JoinColumn(name = "loan_id"),
+            inverseJoinColumns = @JoinColumn(name = "returnCodes_id")
+    )
+    private Set<ReturnCodesEntity> returnCodesEntities;
+
+    @ManyToMany
+    @JoinTable(
+            name = "loans_ReservationCodes",
+            joinColumns = @JoinColumn(name = "loan_id"),
+            inverseJoinColumns = @JoinColumn(name = "reservationCodes_id")
+    )
+    private Set<ReservationCodeEntity> reservationCodeEntities;
 
     @Column(name = "start_date")
     private Instant startDate;
@@ -35,7 +53,7 @@ public class LoanEntity {
 
     // ✅ El préstamo es sobre una copia específica, no sobre el recurso padre
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resource_copy_id")
+    @JoinColumn(name = "copy_id")
     private ResourceCopyEntity resourceCopy;
 
     public LoanEntity() {
@@ -51,6 +69,22 @@ public class LoanEntity {
         this.status = status;
         this.user = user;
         this.resourceCopy = resourceCopy;
+    }
+
+    public Set<ReturnCodesEntity> getReturnCodesEntities() {
+        return returnCodesEntities;
+    }
+
+    public void setReturnCodesEntities(Set<ReturnCodesEntity> returnCodesEntities) {
+        this.returnCodesEntities = returnCodesEntities;
+    }
+
+    public Set<ReservationCodeEntity> getReservationCodeEntities() {
+        return reservationCodeEntities;
+    }
+
+    public void setReservationCodeEntities(Set<ReservationCodeEntity> reservationCodeEntities) {
+        this.reservationCodeEntities = reservationCodeEntities;
     }
 
     public UUID getId() { return id; }

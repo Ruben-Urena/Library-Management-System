@@ -14,7 +14,6 @@ public record GetAllResourceResponse(
         String edition,
         String publicationDate,
         String status,
-        String state,
         String physicalFormat,
         String ShelfLocation,
         String isbn,

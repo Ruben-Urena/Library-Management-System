@@ -18,7 +18,6 @@ public interface BibliographyRepository {
     Optional<BibliographyResource> findById(ResourceID id);
     List<BibliographyResource> findAll();
     public List<BibliographyResource> findByStatus(Status status);
-    public List<BibliographyResource> findByState(ResourceState state);
     public List<BibliographyResource> findByAuthorId(AuthorId authorId);
     public Optional<BibliographyResource> findByTitleAndAuthorId(ResourceMainData resourceMainData, Set<AuthorId> authorIdSet);
 }

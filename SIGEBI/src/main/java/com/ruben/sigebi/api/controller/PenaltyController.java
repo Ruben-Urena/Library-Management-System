@@ -1,6 +1,7 @@
 package com.ruben.sigebi.api.controller;
 
 import com.ruben.sigebi.api.dto.request.penalty.ApplyPenaltyRequest;
+import com.ruben.sigebi.api.dto.request.penalty.GetUserPenaltyRequest;
 import com.ruben.sigebi.api.dto.request.penalty.RemovePenaltyRequest;
 import com.ruben.sigebi.api.dto.response.penalty.PenaltyResponse;
 import com.ruben.sigebi.api.dto.response.resource.GetUserPenaltiesResponse;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/penalties")
 public class PenaltyController {
@@ -63,11 +65,15 @@ public class PenaltyController {
     /**
      * GET /api/penalties/user/{userId}
      * Devuelve todas las penalizaciones de un usuario.
+     * Body {"status": "ACTIVE"}
      */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<GetUserPenaltiesResponse>> getUserPenalties(@PathVariable UUID userId) {
+    public ResponseEntity<List<GetUserPenaltiesResponse>> getUserPenalties(
+            @PathVariable UUID userId,
+            @ModelAttribute GetUserPenaltyRequest penalties
+    ) {
         try {
-            return ResponseEntity.ok(getUserPenaltiesUseCase.execute(userId));
+            return ResponseEntity.ok(getUserPenaltiesUseCase.execute(userId,penalties));
         } catch (ElementNotFoundInTheDatabaseException e) {
             return ResponseEntity.notFound().build();
         }

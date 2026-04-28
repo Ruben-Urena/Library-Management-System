@@ -1,5 +1,6 @@
 package com.ruben.sigebi.api.controller;
 import com.ruben.sigebi.api.dto.request.loan.LoanResourceRequest;
+import com.ruben.sigebi.api.dto.request.penalty.GetUserPenaltyRequest;
 import com.ruben.sigebi.api.dto.response.resource.GetUserLoansResponse;
 import com.ruben.sigebi.api.dto.response.resource.LoanResourceResponse;
 import com.ruben.sigebi.api.dto.response.resource.ReturnLoanResponse;
@@ -9,6 +10,7 @@ import com.ruben.sigebi.application.usecases.loan.RequestLoanUseCase;
 import com.ruben.sigebi.application.usecases.loan.ReturnLoanUseCase;
 import com.ruben.sigebi.application.usecases.loan.view.GetUserLoansUseCase;
 import com.ruben.sigebi.domain.User.valueObject.UserId;
+import com.ruben.sigebi.domain.common.enums.Status;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import java.util.List;
 
 import java.util.UUID;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/loans")
 public class LoanController {
@@ -39,8 +42,8 @@ public class LoanController {
      * Devuelve todos los préstamos de un usuario.
      */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<GetUserLoansResponse>> getUserLoans(@PathVariable UUID userId) {
-        return ResponseEntity.ok(getUserLoansUseCase.execute(userId));
+    public ResponseEntity<List<GetUserLoansResponse>> getUserLoans(@PathVariable UUID userId, @ModelAttribute Status status) {
+        return ResponseEntity.ok(getUserLoansUseCase.execute(userId, status));
     }
 
     /**
